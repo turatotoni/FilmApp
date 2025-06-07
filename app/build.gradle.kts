@@ -5,6 +5,11 @@ plugins {
 }
 
 android {
+    //BuildConfig je proradio kad sam dodao ovo i prebacio BUildCOnfigFields u BUildTypes
+    buildFeatures {
+        buildConfig = true
+    }
+
     namespace = "com.example.filmapp"
     compileSdk = 35
 
@@ -16,6 +21,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -25,8 +31,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "TMDB_API_KEY", "\"${properties["TMDB_API_KEY"]}\"")
+        }
+        debug {
+            buildConfigField("String", "TMDB_API_KEY", "\"${properties["TMDB_API_KEY"]}\"")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -50,4 +61,18 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    // Retrofit za API pozive
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
+    // Glide za učitavanje slika
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // Logging za Retrofit (opcionalno)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // Potrebni dependencii za viewmodelscope
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
 }
