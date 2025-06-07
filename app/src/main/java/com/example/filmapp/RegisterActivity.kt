@@ -63,7 +63,7 @@ class RegisterActivity : AppCompatActivity() {
                                         .set(userData)
                                         .addOnSuccessListener {
                                             Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-                                            startActivity(Intent(this, MainActivity::class.java))
+                                            startActivity(Intent(this, HomeActivity::class.java))
                                             finish()
                                         }
                                         .addOnFailureListener { e ->

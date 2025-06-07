@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         //task: This is like a "report card" from Firebase
                         if (task.isSuccessful) {
-                            val intent = Intent(this, MainActivity::class.java)
+                            val intent = Intent(this, HomeActivity::class.java)
                             startActivity (intent)
                             //we use finish() when we dont expect to go back to this activity, like here we dont
                             //expect to go back to login after we already successfully logged in
