@@ -1,7 +1,15 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+}
+
+val apikeyProperties = Properties().apply { //testiram da li radi kad je apikey u apikey.properties
+    load(rootProject.file("apikey.properties").inputStream())
 }
 
 android {
@@ -31,10 +39,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "TMDB_API_KEY", "\"${properties["TMDB_API_KEY"]}\"")
+            buildConfigField("String", "TMDB_API_KEY", "\"${apikeyProperties["TMDB_API_KEY"]}\"")
         }
         debug {
-            buildConfigField("String", "TMDB_API_KEY", "\"${properties["TMDB_API_KEY"]}\"")
+            buildConfigField("String", "TMDB_API_KEY", "\"${apikeyProperties["TMDB_API_KEY"]}\"")
         }
     }
 
