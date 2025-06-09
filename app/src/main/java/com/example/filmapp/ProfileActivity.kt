@@ -1,6 +1,7 @@
 package com.example.filmapp
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
@@ -63,7 +64,7 @@ class ProfileActivity : AppCompatActivity() {
         }
         logoutButton.setOnClickListener {
             auth.signOut()
-            startActivity(Intent(this, MainActivity::class.java)) //napravi ipak da te baci na logoutactivity a ne odma na login i registraciju
+            startActivity(Intent(this, LogoutActivity::class.java)) //napravi ipak da te baci na logoutactivity a ne odma na login i registraciju
             finishAffinity()
         }
     }
