@@ -7,9 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 class HomeActivity : AppCompatActivity() {
+
+    private lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -35,8 +39,25 @@ class HomeActivity : AppCompatActivity() {
         }
 
         viewModel.fetchPopularMovies()
-        Log.d("API_KEY", BuildConfig.TMDB_API_KEY)
 
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.navigation_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.navigation_home -> {
+                    true
+                }
+                else -> false
+            }
+        }
     }
-
+    override fun onResume() {
+        super.onResume()
+        // Osigurajte da je Home označen kad se vratite na ovaj Activity
+        bottomNavigationView.selectedItemId = R.id.navigation_home
+    }
 }
