@@ -59,61 +59,95 @@ class ProfileActivity : AppCompatActivity() {
         loadUserData()
 
         changePhotoText.setOnClickListener {
-            openGalleryForImage()
+            openAvatarPicker()
             //Toast.makeText(this, "Change photo clicked", Toast.LENGTH_SHORT).show()
         }
         logoutButton.setOnClickListener {
             auth.signOut()
-            startActivity(Intent(this, LogoutActivity::class.java)) //napravi ipak da te baci na logoutactivity a ne odma na login i registraciju
-            finishAffinity()
+            //trebalo bi samo napraviti da kad se log autas odma ides na log aut a ne da prelazi mainactivity i slicno
+            val intent = Intent(this, LogoutActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            overridePendingTransition(0, 0) // Bez animacija
+            finish()
         }
     }
 
-    private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK).apply {
-            type = "image/*"
-        }
-        pickImageLauncher.launch(intent)
-    }
-
-    private val pickImageLauncher = registerForActivityResult(
+    private val pickAvatarLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            val selectedImageUri = result.data?.data
-            selectedImageUri?.let {
-                // Obrada odabrane slike
+            val avatarResId = result.data?.getIntExtra("avatarResId", -1)
+            if (avatarResId != -1) {
                 Glide.with(this)
-                    .load(it)
+                    .load(avatarResId)
                     .circleCrop()
                     .into(profileImage)
-                //Moras stavit sliku na Firestore
+                if (avatarResId != null) {
+                    uploadAvatarToFirebase(avatarResId)
+                }
             }
-            Toast.makeText(this, "Uspješno ste promijenili sliku profila!", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "SLika se ije prom", Toast.LENGTH_SHORT).show()
         }
     }
 
+    private fun openAvatarPicker() {
+        val intent = Intent(this, AvatarPickerActivity::class.java)
+        pickAvatarLauncher.launch(intent)
+    }
+
+    private fun uploadAvatarToFirebase(avatarResId: Int) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            // Spremi samo referencu na avatar (npr. "avatar_3")
+            val avatarName = resources.getResourceEntryName(avatarResId)
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.uid)
+                .update("avatar", avatarName)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Picture updated.", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
 
     private fun loadUserData() {
-        val currentUser = auth.currentUser //dohvacamo trenutnog usera
-        currentUser?.let { user -> //?.let provjerava ako je user null; ako nije nastavlja se kod
+        val currentUser = auth.currentUser
 
+        currentUser?.let { user ->
             emailText.text = user.email
 
             firestore.collection("users").document(user.uid)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
-                        val username = document.getString("username") ?: "No username" //?: ako nije null uzmi lijevu vrijednost, inace desnu
+                        val username = document.getString("username") ?: "No username"
                         usernameText.text = username
+
+                        // Dohvati ime avatara iz Firestore-a (npr. "avatar3")
+                        val avatarName = document.getString("avatar")
+                        if (!avatarName.isNullOrEmpty()) {
+                            // Pretvori ime avatara u resource ID
+                            val avatarResId = resources.getIdentifier(
+                                avatarName,
+                                "drawable",
+                                packageName
+                            )
+
+                            if (avatarResId != 0) {
+                                Glide.with(this)
+                                    .load(avatarResId)
+                                    .circleCrop()
+                                    .into(profileImage)
+                            }
+                        }
                     } else {
-                        usernameText.text = user.displayName ?: "User" //imamo i ovaj else dio u slucaju da Firestore dokument uopce ne postoji
+                        usernameText.text = user.displayName ?: "User"
                     }
                 }
                 .addOnFailureListener {
                     usernameText.text = user.displayName ?: "User"
+                    Toast.makeText(this, "CRASHHH", Toast.LENGTH_SHORT).show()
                 }
         }
     }
