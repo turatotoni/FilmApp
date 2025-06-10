@@ -106,7 +106,7 @@ class ProfileActivity : AppCompatActivity() {
                 .document(user.uid)
                 .update("avatar", avatarName)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Picture updated.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Picture updated", Toast.LENGTH_SHORT).show()
                 }
         }
     }
