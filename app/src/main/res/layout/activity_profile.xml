@@ -45,7 +45,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Change Profile Picture"
+                android:text="Change Avatar"
                 android:textColor="@color/purple_500"
                 android:layout_marginTop="8dp"
                 android:id="@+id/change_photo_text"/>
