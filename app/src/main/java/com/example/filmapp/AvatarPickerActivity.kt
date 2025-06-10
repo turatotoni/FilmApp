@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.content.Intent
 import androidx.recyclerview.widget.GridLayoutManager
 
+//prikaz galerije avatara i mogucnost odabira
 class AvatarPickerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,13 +25,14 @@ class AvatarPickerActivity : AppCompatActivity() {
         )
 
         val recyclerView = findViewById<RecyclerView>(R.id.avatarsRecyclerView)
-        recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.adapter = AvatarAdapter(avatars) { avatarResId ->
+        recyclerView.layoutManager = GridLayoutManager(this, 3) //3 stupca
+        recyclerView.adapter = AvatarAdapter(avatars) { avatarResId -> //stvaranje nove instance adaptera i proslijeđivanje avatarID
             // Vrati odabrani avatar u ProfileActivity
             val resultIntent = Intent()
-            resultIntent.putExtra("avatarResId", avatarResId)
+            resultIntent.putExtra("avatarResId", avatarResId) //spremanje ID-a
             setResult(RESULT_OK, resultIntent)
             finish()
+            //zatvaranje aktivnosti i vracanje na profil
         }
     }
 }
