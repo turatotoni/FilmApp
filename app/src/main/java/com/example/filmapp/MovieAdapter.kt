@@ -33,5 +33,10 @@ class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<Movie
             .into(holder.poster)
     }
 
+    fun updateMovies(newMovies: List<Movie>) {
+        this.movies = newMovies
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount() = movies.size
 }
