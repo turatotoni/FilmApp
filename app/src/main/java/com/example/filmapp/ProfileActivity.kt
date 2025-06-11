@@ -49,6 +49,11 @@ class ProfileActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
+                R.id.navigation_search -> {
+                    startActivity(Intent(this, SearchActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    true
+                }
                 R.id.navigation_profile -> {
                     true
                 }
