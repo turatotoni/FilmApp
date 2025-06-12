@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firestore.v1.StructuredAggregationQuery.Aggregation.Count
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -20,6 +21,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var profileImage: ImageView
     private lateinit var changePhotoText: TextView
+    private lateinit var followingCountText: TextView
+    private lateinit var followersCountText: TextView
     private lateinit var usernameText: TextView
     private lateinit var emailText: TextView
     private lateinit var logoutButton: Button
@@ -35,6 +38,8 @@ class ProfileActivity : AppCompatActivity() {
 
         profileImage = findViewById(R.id.profile_image)
         changePhotoText = findViewById(R.id.change_photo_text)
+        followingCountText = findViewById(R.id.following_count)
+        followersCountText = findViewById(R.id.followers_count)
         usernameText = findViewById(R.id.profile_username)
         emailText = findViewById(R.id.profile_email)
         logoutButton = findViewById(R.id.logout_button)
@@ -110,12 +115,10 @@ class ProfileActivity : AppCompatActivity() {
     private fun uploadAvatarToFirebase(avatarResId: Int) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let { user ->
-            // Spremi samo referencu na avatar (npr. "avatar_3")
-            val avatarName = resources.getResourceEntryName(avatarResId)
             FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.uid)
-                .update("avatar", avatarName)
+                .update("avatarID", avatarResId)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Picture updated", Toast.LENGTH_SHORT).show()
                 }
@@ -133,25 +136,21 @@ class ProfileActivity : AppCompatActivity() {
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
                         val username = document.getString("username") ?: "No username"
+                        val followerCount = document.getLong("followerCount") ?: 0
+                        val followingCount = document.getLong("followingCount") ?: 0
+                        val avatarID = document.getLong("avatarID")?.toInt() ?: R.drawable.ic_profile_placeholder
+
                         usernameText.text = username
+                        followingCountText.text = followingCount.toString()
+                        followersCountText.text = followerCount.toString()
 
-                        // Dohvati ime avatara iz Firestore-a (npr. "avatar3")
-                        val avatarName = document.getString("avatar")
-                        if (!avatarName.isNullOrEmpty()) {
-                            // Pretvori ime avatara u resource ID
-                            val avatarResId = resources.getIdentifier(
-                                avatarName,
-                                "drawable",
-                                packageName
-                            )
 
-                            if (avatarResId != 0) {
-                                Glide.with(this)
-                                    .load(avatarResId)
-                                    .circleCrop()
-                                    .into(profileImage)
-                            }
-                        }
+                        Glide.with(this)
+                            .load(avatarID)
+                            .circleCrop()
+                            .placeholder(R.drawable.ic_profile_placeholder)
+                            .error(R.drawable.ic_profile_placeholder)
+                            .into(profileImage)
                     } else {
                         usernameText.text = user.displayName ?: "User"
                     }
