@@ -23,6 +23,7 @@ class ReviewActivity : AppCompatActivity() {
     private lateinit var reviewText: EditText
     private lateinit var submitButton: Button
     private lateinit var ratingSpinner: Spinner
+    private lateinit var cancelButton: Button
 
     private val reviewRepository = ReviewRepository()
     private lateinit var currentMovie: Movie
@@ -36,11 +37,18 @@ class ReviewActivity : AppCompatActivity() {
         reviewText = findViewById(R.id.reviewText)
         submitButton = findViewById(R.id.submitButton)
         ratingSpinner = findViewById(R.id.ratingSpinner)
+        cancelButton = findViewById(R.id.cancelButton)
 
         currentMovie = intent.getParcelableExtra<Movie>("MOVIE") ?: run {
             Toast.makeText(this, "Movie data not found", Toast.LENGTH_SHORT).show()
             finish()
             return
+        }
+
+        cancelButton.setOnClickListener {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
         // Display movie info
