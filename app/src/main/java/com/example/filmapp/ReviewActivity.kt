@@ -13,9 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,7 +23,6 @@ class ReviewActivity : AppCompatActivity() {
     private lateinit var reviewText: EditText
     private lateinit var submitButton: Button
     private lateinit var ratingSpinner: Spinner
-//    private var submitJob: Job? = null
 
     private val reviewRepository = ReviewRepository()
     private lateinit var currentMovie: Movie
@@ -47,16 +44,17 @@ class ReviewActivity : AppCompatActivity() {
         }
 
         // Display movie info
-        movieTitle.text = currentMovie.title
+        movieTitle.text = currentMovie.title //displayanje postera
         Glide.with(this)
             .load("https://image.tmdb.org/t/p/w500${currentMovie.poster_path}")
             .into(moviePoster)
 
-        submitButton.setOnClickListener {
+        submitButton.setOnClickListener { //glavni dio
             submitReview()
 
-            val intent = Intent(this@ReviewActivity, HomeActivity::class.java)
+            val intent = Intent(this@ReviewActivity, HomeActivity::class.java) //kada zavrsi review prebaci me na home
             startActivity(intent)
+            //Ako bismo stavili finish() odmah nakon submitReview(), aktivnost bi se zatvorila prije nego što korutina
 
         }
 
@@ -75,7 +73,7 @@ class ReviewActivity : AppCompatActivity() {
             return
         }
 
-        val review = Review(
+        val review = Review( //napravi review objekt
             movieId = currentMovie.id,
             movieTitle = currentMovie.title,
             moviePosterPath = currentMovie.poster_path,
@@ -85,7 +83,7 @@ class ReviewActivity : AppCompatActivity() {
 
         Log.d("ReviewActivity", "Submitting reviews $review")
 
-        val progressDialog = MaterialAlertDialogBuilder(this)
+        val progressDialog = MaterialAlertDialogBuilder(this) //za izgled malo bolje
             .setView(R.layout.dialog_progress)
             .setCancelable(false)
             .create()
@@ -95,10 +93,10 @@ class ReviewActivity : AppCompatActivity() {
 
 
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) { //korutina se pokrece u pozadinskom threadu
             try {
                 reviewRepository.addReview(review)
-                withContext(Dispatchers.Main) {
+                withContext(Dispatchers.Main) { //ako sve uspije na vrca se na main thread
                     if (!isFinishing) {
                         if (progressDialog.isShowing) {
                             progressDialog.dismiss()
@@ -113,7 +111,7 @@ class ReviewActivity : AppCompatActivity() {
                         if (progressDialog.isShowing) {
                             progressDialog.dismiss()
                         }
-                        submitButton.isEnabled = true
+                        submitButton.isEnabled = true //ako ne uspije poslat korisnik moze probat ponovo
                         Toast.makeText(
                             this@ReviewActivity,
                             "Error: ${e.localizedMessage}",
