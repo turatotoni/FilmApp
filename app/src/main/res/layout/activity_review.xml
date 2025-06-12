@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/moviePoster"
+                android:layout_width="200dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/movieTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rating: "
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"/>
+
+            <Spinner
+                android:id="@+id/ratingSpinner"
+                android:minHeight="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/ratings_array"
+                android:prompt="@string/rating_prompt"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Your Review:"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/reviewText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Share your thoughts about this movie..."
+                android:inputType="textMultiLine"
+                android:minHeight="150dp" />
+
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Submit Review" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

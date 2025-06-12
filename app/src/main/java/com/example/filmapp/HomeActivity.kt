@@ -2,7 +2,7 @@ package com.example.filmapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +36,12 @@ class HomeActivity : AppCompatActivity() {
         // ViewModel i promatranje podataka
         val viewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
         viewModel.movies.observe(this) { movies ->
-            recyclerView.adapter = MovieAdapter(movies)
+            recyclerView.adapter = MovieAdapter(movies) { movie -> //dodana lambda kada se stisne na film, otvori se novi review activity
+                val intent = Intent(this, ReviewActivity::class.java).apply {
+                    putExtra("MOVIE", movie)
+                }
+                startActivity(intent)
+            }
         }
 
         viewModel.fetchPopularMovies()
@@ -53,6 +59,12 @@ class HomeActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
+                R.id.navigation_reviews -> {
+                    startActivity(Intent(this, ReviewsListActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
+                }
                 R.id.navigation_home -> {
                     true
                 }
@@ -60,6 +72,7 @@ class HomeActivity : AppCompatActivity() {
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         // Osigurajte da je Home označen kad se vratite na ovaj Activity

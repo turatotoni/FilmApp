@@ -54,6 +54,12 @@ class ProfileActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
+                R.id.navigation_reviews -> {
+                    startActivity(Intent(this, ReviewsListActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
+                }
                 R.id.navigation_profile -> {
                     true
                 }

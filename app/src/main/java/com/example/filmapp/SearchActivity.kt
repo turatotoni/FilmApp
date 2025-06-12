@@ -25,7 +25,14 @@ class SearchActivity : AppCompatActivity() {
         // Inicijalizacija RecyclerView-a
         searchRecyclerView = findViewById(R.id.searchResultsRecyclerView)
         searchRecyclerView.layoutManager = LinearLayoutManager(this)
-        searchAdapter = MovieAdapter(emptyList()) // Koristimo isti adapter kao za Home
+
+        searchAdapter = MovieAdapter(emptyList()) { movie -> //dodana lambda kada se stisne na film, otvori se novi review activity
+            val intent = Intent(this, ReviewActivity::class.java).apply {
+                putExtra("MOVIE", movie)
+            }
+            startActivity(intent)
+        }// Koristimo isti adapter kao za Home
+
         searchRecyclerView.adapter = searchAdapter
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -39,6 +46,12 @@ class SearchActivity : AppCompatActivity() {
                 R.id.navigation_home -> {
                     startActivity(Intent(this, HomeActivity::class.java))
                     overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.navigation_reviews -> {
+                    startActivity(Intent(this, ReviewsListActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
                     true
                 }
                 R.id.navigation_search -> {

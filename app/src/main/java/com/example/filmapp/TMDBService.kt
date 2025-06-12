@@ -11,7 +11,7 @@ interface TMDBService {
     suspend fun getPopularMovies(
         @Query("api_key") apiKey: String, //api kljuc
         @Query("language") language: String = "en-US", //jezik
-        @Query("page") page: Int = 1 //broj stranice
+        @Query("page") page: Int//broj stranice
     ): MovieResponse //sve u ovaj objekt
 
     companion object {

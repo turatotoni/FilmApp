@@ -15,12 +15,15 @@ class MoviesViewModel : ViewModel() {
     val movies = MutableLiveData<List<Movie>>() //promjenjivi kontejner za podatke koji obaviještava Activity o promjenama
 
     fun fetchPopularMovies() {
-      viewModelScope.launch {
-          Log.d("API_KEY", BuildConfig.TMDB_API_KEY)
-          val result = repository.getPopularMovies() // dohvacanje filmova
-          movies.postValue(result) //azuriranje LiveData s novim filmovima
+        val randomPage = (1..30).random() //da nisu uvijek isti popularni filmovi
+        viewModelScope.launch {
+            try {
+                val result = repository.getPopularMovies(randomPage)
+                movies.postValue(result) //azuriranje LiveData s novim filmovimay
+            } catch (e: Exception) {
+                Log.e("MoviesViewModel", "Error fetching movies", e)
+            }
 
-          movies.postValue(result)
        }
 //        val testList = listOf(
 //            Movie(1, "Test Film 1", "Opis 1", null, 7.5, "2021-01-01"),

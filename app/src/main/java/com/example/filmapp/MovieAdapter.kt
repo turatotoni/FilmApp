@@ -8,7 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+class MovieAdapter(
+    private var movies: List<Movie>,
+    private var onItemClick: (Movie) -> Unit //DODAVANJE DA MOZES KLIKNUT NA FILM
+) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
     class MovieViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.movieTitle)
@@ -31,6 +34,10 @@ class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<Movie
         Glide.with(holder.itemView.context)
             .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
             .into(holder.poster)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(movie) //dodavanje da mozes kliknut na film
+        }
     }
 
     fun updateMovies(newMovies: List<Movie>) {
