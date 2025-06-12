@@ -11,9 +11,9 @@
         android:title="Search"/>
 
     <item
-        android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_favorite"
-        android:title="Favorites"/>
+        android:id="@+id/navigation_reviews"
+        android:icon="@drawable/ic_reviews"
+        android:title="My Reviews"/>
 
     <item
         android:id="@+id/navigation_profile"

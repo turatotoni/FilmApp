@@ -29,6 +29,8 @@
         <activity android:name=".LogoutActivity" />
         <activity android:name=".AvatarPickerActivity" />
         <activity android:name=".SearchActivity" />
+        <activity android:name=".ReviewActivity" />
+        <activity android:name=".ReviewsListActivity" />
     </application>
 
 </manifest>

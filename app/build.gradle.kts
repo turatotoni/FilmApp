@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    id("kotlin-parcelize")
 }
 
 val apikeyProperties = Properties().apply { //testiram da li radi kad je apikey u apikey.properties
@@ -87,5 +88,7 @@ dependencies {
 
     //bottom nav
     implementation("com.google.android.material:material:1.12.0")
+    //refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
 }
