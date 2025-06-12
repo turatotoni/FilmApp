@@ -14,7 +14,7 @@ class ReviewRepository {
         val reviewWithUserId = review.copy(userId = currentUser.uid) //trenutni user pise ovaj review
 
         try {
-            firestore.collection("reviews")
+            firestore.collection("reviews") //dodavanje na firestore
                 .add(reviewWithUserId)
                 .await()
         } catch (e: Exception) {

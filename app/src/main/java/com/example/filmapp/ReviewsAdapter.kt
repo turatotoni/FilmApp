@@ -38,6 +38,8 @@ class ReviewsAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<R
         holder.reviewText.text = review.reviewText
         //pokusavam napravit da nemoram slat spinner na prikaz, nego textview koji mogu ljepse prikazat
         //zelim da spinner spremi ocjenu i onda poslat int u funkciji getSelectedRating
+
+        //na kraju mi getselectedrating uopce nije trebao
         holder.ratingText.text = "⭐ ${review.rating.toInt()}/10"
 
         // Postavi Spinner s ocjenama 1-10
