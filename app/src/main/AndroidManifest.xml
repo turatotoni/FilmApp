@@ -31,6 +31,7 @@
         <activity android:name=".SearchActivity" />
         <activity android:name=".ReviewActivity" />
         <activity android:name=".ReviewsListActivity" />
+        <activity android:name=".UserProfileActivity" />
     </application>
 
 </manifest>

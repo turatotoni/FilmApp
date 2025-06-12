@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="Cancel"
+                    android:text="@string/cancel"
                     android:backgroundTint="@color/gray"/>
 
                 <Button
@@ -81,7 +81,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Submit Review" />
+                    android:text="@string/submit_review" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

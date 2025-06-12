@@ -13,4 +13,11 @@
         <item>9</item>
         <item>10</item>
     </string-array>
+    <string name="user_avatar">User avatar</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit_review">Submit Review</string>
 </resources>
