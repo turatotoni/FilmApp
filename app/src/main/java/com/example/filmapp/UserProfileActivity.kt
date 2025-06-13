@@ -5,14 +5,24 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class UserProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var reviewsAdapter: ReviewsAdapter
+    private lateinit var reviewsRecyclerView: RecyclerView
+    private lateinit var reviewsSectionTitle: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +30,14 @@ class UserProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+
+        reviewsRecyclerView = findViewById(R.id.reviews_recycler_view)
+        reviewsSectionTitle = findViewById(R.id.reviews_section_title)
+
+        // Setup RecyclerView
+        reviewsRecyclerView.layoutManager = LinearLayoutManager(this)
+        reviewsAdapter = ReviewsAdapter(emptyList())
+        reviewsRecyclerView.adapter = reviewsAdapter
 
         val userId = intent.getStringExtra("USER_ID")
         val currentUserId = auth.currentUser?.uid
@@ -78,7 +96,14 @@ class UserProfileActivity : AppCompatActivity() {
             .document(currentUserId)
             .get()
             .addOnSuccessListener { document ->
+                val isFollowing = document.exists()
                 button.text = if (document.exists()) "Unfollow" else "Follow"
+
+                if (isFollowing) {
+                    loadUserReviews(targetUserId)
+                } else {
+                    hideReviews()
+                }
             }
     }
 
@@ -97,14 +122,51 @@ class UserProfileActivity : AppCompatActivity() {
                 button.text = "Follow"
                 updateFollowerCount(targetUserId, -1)
                 updateFollowingCount(currentUserId, -1)
+                hideReviews()
             } else {
                 // Follow
                 followersRef.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
                 button.text = "Unfollow"
                 updateFollowerCount(targetUserId, 1)
                 updateFollowingCount(currentUserId, 1)
+                loadUserReviews(targetUserId)
             }
         }
+    }
+
+    private fun loadUserReviews(userId: String) { //prikaz reviewa na profilu
+        CoroutineScope(Dispatchers.IO).launch { //rad u pozadini
+            try {
+                val reviews = firestore.collection("reviews") //trazenje u firestore svih reviewa s ovim userIDem
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .await()
+                    .toObjects(Review::class.java)//pretvorba u objekt
+
+                withContext(Dispatchers.Main) { //kada su reviewi spremni za prikazat vraca se u main thread
+                    if (reviews.isNotEmpty()) {
+                        reviewsAdapter.updateReviews(reviews)
+                        reviewsSectionTitle.visibility = View.VISIBLE
+                        reviewsRecyclerView.visibility = View.VISIBLE
+                    } else {
+                        reviewsSectionTitle.visibility = View.VISIBLE
+                        reviewsSectionTitle.text = R.string.no_reviews_yet.toString()
+                        reviewsRecyclerView.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    reviewsSectionTitle.visibility = View.VISIBLE
+                    reviewsSectionTitle.text = R.string.error_loading_reviews.toString()
+                    reviewsRecyclerView.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun hideReviews() {
+        reviewsSectionTitle.visibility = View.GONE
+        reviewsRecyclerView.visibility = View.GONE
     }
 
     private fun updateFollowerCount(userId: String, change: Int) {
