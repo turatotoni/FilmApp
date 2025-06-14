@@ -37,4 +37,22 @@ class ReviewRepository {
             emptyList()
         }
     }
+
+    suspend fun updateReviewLikesDislikes(reviewId: String, likes: List<String>, dislikes: List<String>) {
+        try {
+            firestore.collection("reviews")
+                .document(reviewId)
+                .update(
+                    mapOf(
+                        "likes" to likes,
+                        "dislikes" to dislikes
+                    )
+                )
+                .await()
+        } catch (e: Exception) {
+            Log.e("ReviewRepository", "Error updating likes/dislikes for review $reviewId", e)
+            throw e
+        }
+    }
+
 }

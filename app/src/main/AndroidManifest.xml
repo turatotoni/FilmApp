@@ -32,6 +32,7 @@
         <activity android:name=".ReviewActivity" />
         <activity android:name=".ReviewsListActivity" />
         <activity android:name=".UserProfileActivity" />
+        <activity android:name=".DisplayReviewActivity"/>
     </application>
 
 </manifest>

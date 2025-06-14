@@ -12,7 +12,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
-class ReviewsAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolder>() {
+class ReviewsAdapter(
+    private var reviews: List<Review>,
+    private val onItemClick: (Review) -> Unit
+) : RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolder>() {
 
     private var ratingSpinner : Spinner? = null
 
@@ -78,6 +81,9 @@ class ReviewsAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<R
                     .skipMemoryCache(false)
                 )
                 .into(holder.moviePoster)
+        }
+        holder.itemView.setOnClickListener {
+            onItemClick(review)
         }
     }
 

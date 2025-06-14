@@ -1,5 +1,6 @@
 package com.example.filmapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -36,7 +37,12 @@ class UserProfileActivity : AppCompatActivity() {
 
         // Setup RecyclerView
         reviewsRecyclerView.layoutManager = LinearLayoutManager(this)
-        reviewsAdapter = ReviewsAdapter(emptyList())
+        reviewsAdapter = ReviewsAdapter(emptyList()) { review ->
+            val intent = Intent(this, DisplayReviewActivity::class.java).apply {
+                putExtra("review", review)
+            }
+            startActivity(intent)
+        }
         reviewsRecyclerView.adapter = reviewsAdapter
 
         val userId = intent.getStringExtra("USER_ID")

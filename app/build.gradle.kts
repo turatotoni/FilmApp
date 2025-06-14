@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 val apikeyProperties = Properties().apply { //testiram da li radi kad je apikey u apikey.properties
@@ -17,6 +18,7 @@ android {
     //BuildConfig je proradio kad sam dodao ovo i prebacio BUildCOnfigFields u BUildTypes
     buildFeatures {
         buildConfig = true
+        dataBinding = true
     }
 
     namespace = "com.example.filmapp"

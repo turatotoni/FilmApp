@@ -25,7 +25,14 @@ class ReviewsListActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.reviewsRecyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(this@ReviewsListActivity)
-        adapter = ReviewsAdapter(emptyList())
+
+        adapter = ReviewsAdapter(emptyList()) { review ->
+            val intent = Intent(this, DisplayReviewActivity::class.java).apply {
+                putExtra("review", review)
+            }
+            startActivity(intent)
+        }
+
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
 
