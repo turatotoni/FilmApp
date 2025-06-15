@@ -2,14 +2,15 @@ package com.example.filmapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : AppCompatActivity() {
     //Firebase variable which we will use to save emails in Firebase
@@ -27,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
         val emailEditText = findViewById<EditText>(R.id.emailEditText)
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
 
+
         loginBtn.setOnClickListener {
             //converts the views we got by findViewById to strings
             val email = emailEditText.text.toString()
@@ -39,6 +41,11 @@ class LoginActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         //task: This is like a "report card" from Firebase
                         if (task.isSuccessful) {
+                            val userId = auth.currentUser?.uid ?: return@addOnCompleteListener
+
+                            // Update FCM token
+                            updateFcmToken(userId)
+
                             val intent = Intent(this, HomeActivity::class.java)
                             startActivity (intent)
                             //we use finish() when we dont expect to go back to this activity, like here we dont
@@ -61,6 +68,20 @@ class LoginActivity : AppCompatActivity() {
         registerTextView.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun updateFcmToken(userId: String) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                FirebaseFirestore.getInstance().collection("users")
+                    .document(userId)
+                    .update("fcmToken", token)
+                    .addOnFailureListener { e ->
+                        Log.e("FCM", "Failed to save FCM token", e)
+                    }
+            }
         }
     }
 }

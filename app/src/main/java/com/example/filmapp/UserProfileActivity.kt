@@ -2,6 +2,7 @@ package com.example.filmapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -138,6 +139,7 @@ class UserProfileActivity : AppCompatActivity() {
                 loadUserReviews(targetUserId)
             }
         }
+        sendFollowNotification(currentUserId, targetUserId)
     }
 
     private fun loadUserReviews(userId: String) { //prikaz reviewa na profilu
@@ -168,6 +170,33 @@ class UserProfileActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun sendFollowNotification(followerId: String, targetUserId: String) {
+        // Get follower's username first
+        firestore.collection("users").document(followerId).get()
+            .addOnSuccessListener { document ->
+                val followerName = document.getString("username") ?: "Someone"
+
+                // Create notification document in Firestore
+                val notificationData = hashMapOf(
+                    "type" to "follow",
+                    "senderId" to followerId,
+                    "receiverId" to targetUserId,
+                    "username" to followerName, // Store username to avoid extra lookups
+                    "timestamp" to FieldValue.serverTimestamp(),
+                    "read" to false
+                )
+
+                firestore.collection("notifications")
+                    .add(notificationData)
+                    .addOnFailureListener { e ->
+                        Log.e("Notifications", "Error creating follow notification", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Notifications", "Error getting follower info", e)
+            }
     }
 
     private fun hideReviews() {

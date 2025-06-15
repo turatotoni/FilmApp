@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -114,7 +115,9 @@ class DisplayReviewActivity : AppCompatActivity() {
                 val currentLikes = review.likes.toMutableList()
                 val currentDislikes = review.dislikes.toMutableList()
 
-                if (currentLikes.contains(userId)) {
+                val wasLiked = currentLikes.contains(userId)
+
+                if (wasLiked) {
                     currentLikes.remove(userId)
                 } else {
                     currentLikes.add(userId)
@@ -130,6 +133,10 @@ class DisplayReviewActivity : AppCompatActivity() {
 
                 review = review.copy(likes = currentLikes, dislikes = currentDislikes)
                 updateLikeDislikeCounts()
+
+                if (!wasLiked) {
+                    sendLikeNotification(userId, review.userId, review.movieTitle)
+                }
             } catch (e: Exception) {
                 Log.e("DisplayReviewActivity", "Error toggling like", e)
                 Toast.makeText(this@DisplayReviewActivity,
@@ -144,7 +151,9 @@ class DisplayReviewActivity : AppCompatActivity() {
                 val currentLikes = review.likes.toMutableList()
                 val currentDislikes = review.dislikes.toMutableList()
 
-                if (currentDislikes.contains(userId)) {
+                val wasDisliked = currentDislikes.contains(userId)
+
+                if (wasDisliked) {
                     currentDislikes.remove(userId)
                 } else {
                     currentDislikes.add(userId)
@@ -160,12 +169,74 @@ class DisplayReviewActivity : AppCompatActivity() {
 
                 review = review.copy(likes = currentLikes, dislikes = currentDislikes)
                 updateLikeDislikeCounts()
+
+                if (!wasDisliked) {
+                    sendDislikeNotification(userId, review.userId, review.movieTitle)
+                }
             } catch (e: Exception) {
                 Log.e("DisplayReviewActivity", "Error toggling dislike", e)
                 Toast.makeText(this@DisplayReviewActivity,
                     "Failed to update dislike: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun sendLikeNotification(likerId: String, reviewOwnerId: String, movieTitle: String) {
+        if (likerId == reviewOwnerId) return
+
+        // Get liker's username first
+        firestore.collection("users").document(likerId).get()
+            .addOnSuccessListener { document ->
+                val likerName = document.getString("username") ?: "Someone"
+
+                val notificationData = hashMapOf(
+                    "type" to "like",
+                    "senderId" to likerId,
+                    "receiverId" to reviewOwnerId,
+                    "movieTitle" to movieTitle,
+                    "username" to likerName, // Store username to avoid extra lookups
+                    "timestamp" to FieldValue.serverTimestamp(),
+                    "read" to false
+                )
+
+                firestore.collection("notifications")
+                    .add(notificationData)
+                    .addOnFailureListener { e ->
+                        Log.e("Notifications", "Error creating like notification", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Notifications", "Error getting liker info", e)
+            }
+    }
+
+    private fun sendDislikeNotification(dislikerId: String, reviewOwnerId: String, movieTitle: String) {
+        if (dislikerId == reviewOwnerId) return
+
+        // Get disliker's username first
+        firestore.collection("users").document(dislikerId).get()
+            .addOnSuccessListener { document ->
+                val dislikerName = document.getString("username") ?: "Someone"
+
+                val notificationData = hashMapOf(
+                    "type" to "dislike",
+                    "senderId" to dislikerId,
+                    "receiverId" to reviewOwnerId,
+                    "movieTitle" to movieTitle,
+                    "username" to dislikerName, // Store username to avoid extra lookups
+                    "timestamp" to FieldValue.serverTimestamp(),
+                    "read" to false
+                )
+
+                firestore.collection("notifications")
+                    .add(notificationData)
+                    .addOnFailureListener { e ->
+                        Log.e("Notifications", "Error creating dislike notification", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Notifications", "Error getting disliker info", e)
+            }
     }
 
     private suspend fun getReviewDocumentId(): String {

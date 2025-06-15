@@ -2,6 +2,7 @@ package com.example.filmapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -56,12 +58,15 @@ class RegisterActivity : AppCompatActivity() {
                                     val user = auth.currentUser
                                     user?.let { firebaseUser -> //null provjera
                                         val userId = firebaseUser.uid
+                                        updateFcmToken(userId)
+
                                         val userData = hashMapOf( //mapiramo sve vrijednosti
                                             "username" to username,
                                             "email" to email,
                                             "avatarID" to R.drawable.ic_profile_placeholder,
                                             "followerCount" to 0,
-                                            "followingCount" to 0
+                                            "followingCount" to 0,
+                                            "fcmToken" to ""
                                         )
 
                                         firestore.collection("users") //napravimo usera u firestore-u
@@ -119,6 +124,20 @@ class RegisterActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error checking username: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
+        }
+    }
+
+    private fun updateFcmToken(userId: String) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                FirebaseFirestore.getInstance().collection("users")
+                    .document(userId)
+                    .update("fcmToken", token)
+                    .addOnFailureListener { e ->
+                        Log.e("FCM", "Failed to save FCM token", e)
+                    }
+            }
         }
     }
 }

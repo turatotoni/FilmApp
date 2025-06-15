@@ -1,5 +1,4 @@
 import java.util.Properties
-import java.io.FileInputStream
 
 
 plugins {
@@ -90,5 +89,7 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     //refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    //notis
+    implementation("com.google.firebase:firebase-messaging:23.0.0")
 
 }
