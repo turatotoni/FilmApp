@@ -11,10 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.functions.FirebaseFunctions
 
 class LoginActivity : AppCompatActivity() {
     //Firebase variable which we will use to save emails in Firebase
     private lateinit var auth: FirebaseAuth
+    private lateinit var functions: FirebaseFunctions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
 
                             // Update FCM token
                             updateFcmToken(userId)
+                            deliverPendingNotifications(userId)
 
                             val intent = Intent(this, HomeActivity::class.java)
                             startActivity (intent)
@@ -83,5 +86,20 @@ class LoginActivity : AppCompatActivity() {
                     }
             }
         }
+    }
+
+    private fun deliverPendingNotifications(userId: String) {
+        // Call the Cloud Function to deliver notifications
+        functions.getHttpsCallable("deliverNotifications")
+            .call()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    val count = result?.get("count") as? Int ?: 0
+                    Log.d("Notifications", "Delivered $count notifications")
+                } else {
+                    Log.e("Notifications", "Failed to deliver notifications", task.exception)
+                }
+            }
     }
 }

@@ -199,7 +199,7 @@ class DisplayReviewActivity : AppCompatActivity() {
                     "read" to false
                 )
 
-                firestore.collection("notifications")
+                firestore.collection("pending_notifications")
                     .add(notificationData)
                     .addOnFailureListener { e ->
                         Log.e("Notifications", "Error creating like notification", e)
@@ -228,7 +228,7 @@ class DisplayReviewActivity : AppCompatActivity() {
                     "read" to false
                 )
 
-                firestore.collection("notifications")
+                firestore.collection("pending_notifications")
                     .add(notificationData)
                     .addOnFailureListener { e ->
                         Log.e("Notifications", "Error creating dislike notification", e)

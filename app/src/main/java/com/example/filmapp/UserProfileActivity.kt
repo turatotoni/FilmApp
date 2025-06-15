@@ -189,7 +189,7 @@ class UserProfileActivity : AppCompatActivity() {
                     "read" to false
                 )
 
-                firestore.collection("notifications")
+                firestore.collection("pending_notifications")
                     .add(notificationData)
                     .addOnFailureListener { e ->
                         Log.e("Notifications", "Error creating follow notification", e)
