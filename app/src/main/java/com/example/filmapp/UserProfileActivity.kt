@@ -137,9 +137,10 @@ class UserProfileActivity : AppCompatActivity() {
                 updateFollowerCount(targetUserId, 1)
                 updateFollowingCount(currentUserId, 1)
                 loadUserReviews(targetUserId)
+                sendFollowNotification(currentUserId, targetUserId)
             }
         }
-        sendFollowNotification(currentUserId, targetUserId)
+
     }
 
     private fun loadUserReviews(userId: String) { //prikaz reviewa na profilu
