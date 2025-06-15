@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="160dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/dark_surface"
+    app:cardCornerRadius="8dp"
+    app:strokeColor="@color/yellow_primary"
+    app:strokeWidth="1dp">
 
-    <!-- Poster filma -->
-    <ImageView
-        android:id="@+id/moviePoster"
-        android:layout_width="160dp"
-        android:layout_height="240dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/placeholder" />
-
-    <!-- Naslov filma -->
-    <TextView
-        android:id="@+id/movieTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        android:text="Movie Title" />
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <!-- Ocjena (opcionalno) -->
-    <TextView
-        android:id="@+id/movieRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="⭐ 8.5" />
+        <ImageView
+            android:id="@+id/moviePoster"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/movieTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary"
+            android:text="Movie Title" />
+
+        <TextView
+            android:id="@+id/movieRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/yellow_primary"
+            android:text="⭐ 8.5" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

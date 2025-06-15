@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/dark_background">
 
     <EditText
         android:id="@+id/usernameEditText"
@@ -11,7 +12,10 @@
         android:layout_height="wrap_content"
         android:hint="Username"
         android:inputType="text"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/yellow_primary"/>
 
     <EditText
         android:id="@+id/emailEditText"
@@ -19,7 +23,10 @@
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/yellow_primary"/>
 
     <EditText
         android:id="@+id/passwordEditText"
@@ -27,7 +34,10 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/yellow_primary"/>
 
     <EditText
         android:id="@+id/confirmPasswordEditText"
@@ -35,12 +45,17 @@
         android:layout_height="wrap_content"
         android:hint="Confirm password"
         android:inputType="textPassword"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/yellow_primary"/>
 
     <Button
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"/>
-
+        android:text="Register"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/yellow_primary"
+        android:textColor="@color/dark_background"/>
 </LinearLayout>

@@ -19,14 +19,14 @@ exports.sendNotification = onDocumentCreated(
       const snapshot = event.data;
       const notification = snapshot.data();
 
-      // Skip if notification is already marked as read
+
       if (notification.read) {
         console.log("Notification already read, skipping");
         return;
       }
 
       try {
-        // 1. Get receiver's FCM token
+
         const receiverDoc = await admin.firestore()
             .collection("users")
             .doc(notification.receiverId)
@@ -43,7 +43,7 @@ exports.sendNotification = onDocumentCreated(
           return;
         }
 
-        // 2. Prepare notification content
+
         let title;
         let body;
         const senderName = notification.username || "Someone";
@@ -71,7 +71,7 @@ exports.sendNotification = onDocumentCreated(
             return;
         }
 
-        // 3. Construct the message
+
         const message = {
           token: fcmToken,
           notification: {title, body},
@@ -92,11 +92,11 @@ exports.sendNotification = onDocumentCreated(
           },
         };
 
-        // 4. Send the notification
+
         const response = await admin.messaging().send(message);
         console.log("Successfully sent notification:", response);
 
-        // 5. Mark as read in Firestore
+
         await snapshot.ref.update({read: true});
 
         return;

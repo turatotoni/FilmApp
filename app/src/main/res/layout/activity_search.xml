@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark_background"
     tools:context=".SearchActivity">
 
-    <!-- Search Toggle Button -->
     <Button
         android:id="@+id/search_toggle"
         android:layout_width="wrap_content"
@@ -15,8 +15,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_alignParentStart="true"
-        android:backgroundTint="@color/purple_500"
-        android:textColor="@android:color/white"/>
+        android:backgroundTint="@color/yellow_primary"
+        android:textColor="@color/dark_background"/>
 
     <SearchView
         android:id="@+id/searchView"
@@ -25,7 +25,10 @@
         android:queryHint="Search movies..."
         android:layout_margin="8dp"
         android:layout_toEndOf="@id/search_toggle"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:iconifiedByDefault="false"
+        android:background="@color/dark_surface"
+        android:theme="@style/SearchViewStyle"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultsRecyclerView"
@@ -34,7 +37,8 @@
         android:layout_height="match_parent"
         android:layout_below="@id/searchView"
         android:padding="8dp"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false"
+        android:background="@color/dark_surface"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -43,8 +47,7 @@
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled"
-        android:background="@android:color/white"
+        android:background="@color/dark_surface"
         app:itemIconTint="@drawable/bottom_nav_colors"
         app:itemTextColor="@drawable/bottom_nav_colors"/>
-
 </RelativeLayout>

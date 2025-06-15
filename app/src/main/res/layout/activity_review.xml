@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/dark_background">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -12,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:background="@color/dark_surface">
 
             <ImageView
                 android:id="@+id/moviePoster"
@@ -29,13 +31,15 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="16dp"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rating: "
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/text_primary" />
 
             <Spinner
                 android:id="@+id/ratingSpinner"
@@ -44,14 +48,17 @@
                 android:layout_marginBottom="16dp"
                 android:minHeight="48dp"
                 android:entries="@array/ratings_array"
-                android:prompt="@string/rating_prompt"/>
+                android:prompt="@string/rating_prompt"
+                android:popupBackground="@color/dark_surface"
+                android:backgroundTint="@color/yellow_primary"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Your Review:"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/text_primary" />
 
             <EditText
                 android:id="@+id/reviewText"
@@ -60,7 +67,10 @@
                 android:layout_marginBottom="16dp"
                 android:hint="Share your thoughts about this movie..."
                 android:inputType="textMultiLine"
-                android:minHeight="150dp" />
+                android:minHeight="150dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:backgroundTint="@color/yellow_primary"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -74,14 +84,17 @@
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="@string/cancel"
-                    android:backgroundTint="@color/gray"/>
+                    android:backgroundTint="@color/gray"
+                    android:textColor="@color/text_primary"/>
 
                 <Button
                     android:id="@+id/submitButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/submit_review" />
+                    android:text="@string/submit_review"
+                    android:backgroundTint="@color/yellow_primary"
+                    android:textColor="@color/dark_background"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

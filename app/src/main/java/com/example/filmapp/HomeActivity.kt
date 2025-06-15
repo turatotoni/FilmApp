@@ -14,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var viewModel: MoviesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +28,12 @@ class HomeActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_home)
 
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.fetchPopularMovies()
+        }
+
         // Inicijalizacija RecyclerView-a
         val recyclerView = findViewById<RecyclerView>(R.id.moviesRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@HomeActivity)
@@ -34,7 +41,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         // ViewModel i promatranje podataka
-        val viewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
         viewModel.movies.observe(this) { movies ->
             recyclerView.adapter = MovieAdapter(movies) { movie -> //dodana lambda kada se stisne na film, otvori se novi review activity
                 val intent = Intent(this, ReviewActivity::class.java).apply {
@@ -42,6 +49,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             }
+            swipeRefreshLayout.isRefreshing = false // Stop refresh animation when data is loaded
         }
 
         viewModel.fetchPopularMovies()

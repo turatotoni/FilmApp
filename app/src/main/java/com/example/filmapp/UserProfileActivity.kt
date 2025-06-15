@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -25,6 +26,9 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var reviewsAdapter: ReviewsAdapter
     private lateinit var reviewsRecyclerView: RecyclerView
     private lateinit var reviewsSectionTitle: TextView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private var userId: String? = null
+    private var currentUserId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +37,20 @@ class UserProfileActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
+
         reviewsRecyclerView = findViewById(R.id.reviews_recycler_view)
         reviewsSectionTitle = findViewById(R.id.reviews_section_title)
-
+        reviewsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                swipeRefreshLayout.isEnabled = (recyclerView.computeVerticalScrollOffset() == 0)
+            }
+        })
         // Setup RecyclerView
         reviewsRecyclerView.layoutManager = LinearLayoutManager(this)
         reviewsAdapter = ReviewsAdapter(emptyList()) { review ->
@@ -46,21 +61,32 @@ class UserProfileActivity : AppCompatActivity() {
         }
         reviewsRecyclerView.adapter = reviewsAdapter
 
-        val userId = intent.getStringExtra("USER_ID")
-        val currentUserId = auth.currentUser?.uid
+        userId = intent.getStringExtra("USER_ID")
+        currentUserId = auth.currentUser?.uid
 
         if (userId != null) {
-            loadUserProfile(userId)
+            loadUserProfile(userId!!)
 
             val followButton = findViewById<Button>(R.id.follow_button)
 
             if (userId == currentUserId) {
                 followButton.visibility = View.GONE
             } else {
-                checkFollowingStatus(currentUserId, userId, followButton)
+                checkFollowingStatus(currentUserId, userId!!, followButton)
 
                 followButton.setOnClickListener {
-                    toggleFollowStatus(currentUserId, userId, followButton)
+                    toggleFollowStatus(currentUserId, userId!!, followButton)
+                }
+            }
+        }
+    }
+
+    private fun refreshData() {
+        userId?.let {
+            loadUserProfile(it)
+            currentUserId?.let { currentId ->
+                findViewById<Button>(R.id.follow_button)?.let { button ->
+                    checkFollowingStatus(currentId, it, button)
                 }
             }
         }
@@ -90,6 +116,10 @@ class UserProfileActivity : AppCompatActivity() {
                         .circleCrop()
                         .into(findViewById(R.id.user_avatar_profile))
                 }
+                swipeRefreshLayout.isRefreshing = false
+            }
+            .addOnFailureListener {
+                swipeRefreshLayout.isRefreshing = false
             }
     }
 

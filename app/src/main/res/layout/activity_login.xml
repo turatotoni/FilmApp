@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="20dp"
+    android:background="@color/dark_background">
 
     <EditText
         android:id="@+id/emailEditText"
@@ -11,7 +12,10 @@
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/yellow_primary"/>
 
     <EditText
         android:id="@+id/passwordEditText"
@@ -19,13 +23,19 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/yellow_primary"/>
 
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"/>
+        android:text="Login"
+        android:backgroundTint="@color/yellow_primary"
+        android:textColor="@color/dark_background"
+        android:layout_marginTop="16dp"/>
 
     <TextView
         android:id="@+id/registerTextView"
@@ -34,5 +44,7 @@
         android:clickable="true"
         android:minHeight="48dp"
         android:text="Don't have an account? Register"
-        android:textColor="@color/black" />
+        android:textColor="@color/yellow_primary"
+        android:layout_marginTop="8dp"
+        android:gravity="center"/>
 </LinearLayout>
