@@ -24,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
 
         //getInstance() is like getting the "master" key to all Firebase services
         auth = FirebaseAuth.getInstance()
+        functions = FirebaseFunctions.getInstance("europe-west3")
 
         val loginBtn = findViewById<Button>(R.id.loginButton)
         val registerTextView = findViewById<TextView>(R.id.registerTextView)
@@ -93,7 +94,12 @@ class LoginActivity : AppCompatActivity() {
         functions.getHttpsCallable("deliverNotifications")
             .call()
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
+                if (!task.isSuccessful) {
+                    Log.e("Functions", "Error: ${task.exception?.message}")
+                    return@addOnCompleteListener
+                }
+
+                else if (task.isSuccessful) {
                     val result = task.result?.data as? Map<*, *>
                     val count = result?.get("count") as? Int ?: 0
                     Log.d("Notifications", "Delivered $count notifications")
