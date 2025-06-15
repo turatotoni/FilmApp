@@ -9,5 +9,17 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textColorHint">@color/text_secondary</item>
         <item name="android:background">@color/dark_surface</item>
+        <!-- Add these to ensure all text is white -->
+        <item name="android:editTextColor">@color/text_primary</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:popupTheme">@style/SpinnerPopupStyle</item>
+    </style>
+
+    <style name="SpinnerPopupStyle" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:background">@color/dark_surface</item>
     </style>
 </resources>

@@ -186,17 +186,18 @@ class UserProfileActivity : AppCompatActivity() {
                     if (reviews.isNotEmpty()) {
                         reviewsAdapter.updateReviews(reviews)
                         reviewsSectionTitle.visibility = View.VISIBLE
+                        reviewsSectionTitle.text = getString(R.string.reviews)
                         reviewsRecyclerView.visibility = View.VISIBLE
                     } else {
                         reviewsSectionTitle.visibility = View.VISIBLE
-                        reviewsSectionTitle.text = R.string.no_reviews_yet.toString()
+                        reviewsSectionTitle.text = getString(R.string.no_reviews_yet)
                         reviewsRecyclerView.visibility = View.GONE
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     reviewsSectionTitle.visibility = View.VISIBLE
-                    reviewsSectionTitle.text = R.string.error_loading_reviews.toString()
+                    reviewsSectionTitle.text = getString(R.string.error_loading_reviews)
                     reviewsRecyclerView.visibility = View.GONE
                 }
             }
