@@ -36,8 +36,7 @@ class LoginActivity : AppCompatActivity() {
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email, password)
-                    //addOnCompleteListener is like setting up a callback that says:
-                    //"Hey Firebase, when you finish this task (like login or signup), let me know and tell me how it went.
+
                     .addOnCompleteListener(this) { task ->
                         //task: This is like a "report card" from Firebase
                         if (task.isSuccessful) {

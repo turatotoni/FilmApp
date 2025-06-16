@@ -28,7 +28,7 @@ class HomeActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_home)
 
-        // Initialize SwipeRefreshLayout
+        // Inicijalizacija SwipeRefreshLayout
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.fetchPopularMovies()
