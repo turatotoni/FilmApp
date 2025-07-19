@@ -22,7 +22,7 @@
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="Search movies..."
+        android:queryHint="Search"
         android:layout_margin="8dp"
         android:layout_toEndOf="@id/search_toggle"
         android:layout_alignParentTop="true"

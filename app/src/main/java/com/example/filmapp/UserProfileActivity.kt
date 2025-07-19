@@ -215,9 +215,11 @@ class UserProfileActivity : AppCompatActivity() {
                     "type" to "follow",
                     "senderId" to followerId,
                     "receiverId" to targetUserId,
-                    "username" to followerName, // Store username to avoid extra lookups
+                    "username" to followerName,
                     "timestamp" to FieldValue.serverTimestamp(),
-                    "read" to false
+                    "read" to false,
+                    "sent" to false,
+                    //"sendOnLogin" to true // Mark for sending on login
                 )
 
                 firestore.collection("notifications")
