@@ -17,6 +17,8 @@ class MovieAdapter(
         val title: TextView = view.findViewById(R.id.movieTitle)
         val poster: ImageView = view.findViewById(R.id.moviePoster)
         val rating: TextView = view.findViewById(R.id.movieRating)
+        val releaseDate: TextView = view.findViewById(R.id.movieReleaseDate)
+        val overview: TextView = view.findViewById(R.id.movieOverview)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -29,6 +31,9 @@ class MovieAdapter(
         val movie = movies[position]
         holder.title.text = movie.title
         holder.rating.text = "⭐ ${"%.1f".format(movie.vote_average)}/10"
+        val year = movie.release_date?.take(4) ?: ""
+        holder.releaseDate.text = if (year.isNotEmpty()) "($year)" else ""
+        holder.overview.text = movie.overview
 
         // Učitaj sliku pomoću Glide-a
         Glide.with(holder.itemView.context)
