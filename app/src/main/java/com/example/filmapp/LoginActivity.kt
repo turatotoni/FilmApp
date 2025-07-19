@@ -74,12 +74,19 @@ class LoginActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val token = task.result
+                Log.d("FCM_DEBUG", "New token for $userId: $token")
+
                 FirebaseFirestore.getInstance().collection("users")
                     .document(userId)
                     .update("fcmToken", token)
-                    .addOnFailureListener { e ->
-                        Log.e("FCM", "Failed to save FCM token", e)
+                    .addOnSuccessListener {
+                        Log.d("FCM_DEBUG", "Token saved to Firestore for $userId")
                     }
+                    .addOnFailureListener { e ->
+                        Log.e("FCM_DEBUG", "Failed to save token", e)
+                    }
+            } else {
+                Log.e("FCM_DEBUG", "FCM token fetch failed", task.exception)
             }
         }
     }

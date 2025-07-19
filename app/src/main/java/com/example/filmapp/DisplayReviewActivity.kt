@@ -190,13 +190,15 @@ class DisplayReviewActivity : AppCompatActivity() {
                 val likerName = document.getString("username") ?: "Someone"
 
                 val notificationData = hashMapOf(
-                    "type" to "like",
+                    "type" to "like", // or "dislike"
                     "senderId" to likerId,
                     "receiverId" to reviewOwnerId,
                     "movieTitle" to movieTitle,
-                    "username" to likerName, // Store username to avoid extra lookups
+                    "username" to likerName,
                     "timestamp" to FieldValue.serverTimestamp(),
-                    "read" to false
+                    "read" to false,
+                    "sent" to false,
+                    //"sendOnLogin" to true // Mark for sending on login
                 )
 
                 firestore.collection("notifications")
@@ -219,13 +221,15 @@ class DisplayReviewActivity : AppCompatActivity() {
                 val dislikerName = document.getString("username") ?: "Someone"
 
                 val notificationData = hashMapOf(
-                    "type" to "dislike",
+                    "type" to "dislike", // or "dislike"
                     "senderId" to dislikerId,
                     "receiverId" to reviewOwnerId,
                     "movieTitle" to movieTitle,
-                    "username" to dislikerName, // Store username to avoid extra lookups
+                    "username" to dislikerName,
                     "timestamp" to FieldValue.serverTimestamp(),
-                    "read" to false
+                    "read" to false,
+                    "sent" to false,
+                    //"sendOnLogin" to true // Mark for sending on login
                 )
 
                 firestore.collection("notifications")
