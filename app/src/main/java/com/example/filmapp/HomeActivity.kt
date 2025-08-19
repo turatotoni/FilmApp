@@ -44,7 +44,7 @@ class HomeActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
         viewModel.movies.observe(this) { movies ->
             recyclerView.adapter = MovieAdapter(movies) { movie -> //dodana lambda kada se stisne na film, otvori se novi review activity
-                val intent = Intent(this, ReviewActivity::class.java).apply {
+                val intent = Intent(this, MovieDetailsActivity::class.java).apply {
                     putExtra("MOVIE", movie)
                 }
                 startActivity(intent)

@@ -65,7 +65,7 @@
             android:src="@drawable/ic_thumb_up"
             android:drawablePadding="8dp"
             android:backgroundTint="@color/yellow_500"
-            app:tint="#FFFFFF"/>
+            app:tint="@drawable/button_like_selector"/>
 
         <TextView
             android:id="@+id/likeCount"
@@ -82,7 +82,7 @@
             android:src="@drawable/ic_thumb_down"
             android:drawablePadding="8dp"
             android:backgroundTint="@color/yellow_500"
-            app:tint="#FFFFFF"/>
+            app:tint="@drawable/button_dislike_selector"/>
 
         <TextView
             android:id="@+id/dislikeCount"

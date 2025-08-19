@@ -3,27 +3,30 @@ package com.example.filmapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ReviewsAdapter(
     private var reviews: List<Review>,
     private val onItemClick: (Review) -> Unit
 ) : RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolder>() {
 
-    private var ratingSpinner : Spinner? = null
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val usernameCache = mutableMapOf<String, String>() // Cache for usernames
 
     class ReviewViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val movieTitle: TextView = view.findViewById(R.id.reviewMovieTitle)
         val moviePoster: ImageView = view.findViewById(R.id.reviewMoviePoster)
         val ratingText: TextView = view.findViewById(R.id.reviewRatingText)
         val reviewText: TextView = view.findViewById(R.id.reviewText)
+        val username: TextView = view.findViewById(R.id.reviewUsername)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
@@ -34,44 +37,28 @@ class ReviewsAdapter(
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         val review = reviews[position]
+        val currentUserId = auth.currentUser?.uid ?: ""
 
         Glide.with(holder.itemView.context).clear(holder.moviePoster)
 
         holder.movieTitle.text = review.movieTitle
         holder.reviewText.text = review.reviewText
-        //pokusavam napravit da nemoram slat spinner na prikaz, nego textview koji mogu ljepse prikazat
-        //zelim da spinner spremi ocjenu i onda poslat int u funkciji getSelectedRating
-
-        //na kraju mi getselectedrating uopce nije trebao
         holder.ratingText.text = "⭐ ${review.rating.toInt()}/10"
 
-        // Postavi Spinner s ocjenama 1-10
-//        val ratings = (1..10).map { it.toString() }
-//        val adapter = ArrayAdapter(
-//            holder.itemView.context,
-//            android.R.layout.simple_spinner_item,
-//            ratings
-//        ).apply {
-//            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        }
-//
-//        holder.ratingSpinner.adapter = adapter
-//        holder.ratingSpinner.setSelection(review.rating.toInt() - 1) // Postavi odabranu ocjenu
-//        holder.ratingSpinner.isEnabled = false // Onemogući mijenjanje ocjene u prikazu
-
-        if (ratingSpinner == null) {
-            ratingSpinner = Spinner(holder.itemView.context).apply {
-                adapter = ArrayAdapter(
-                    context,
-                    android.R.layout.simple_spinner_item,
-                    (1..10).map { it.toString() }
-                ).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
+        // Handle username display
+        if (review.userId == currentUserId) {
+            // Hide username for current user's reviews
+            holder.username.visibility = View.GONE
+        } else {
+            // Show username for other users' reviews
+            holder.username.visibility = View.VISIBLE
+            if (usernameCache.containsKey(review.userId)) {
+                holder.username.text = usernameCache[review.userId]
+            } else {
+                holder.username.text = "Loading..." // Placeholder while loading
+                fetchUsername(review.userId, holder)
             }
         }
-
-        ratingSpinner?.setSelection(review.rating.toInt() - 1)
 
         review.moviePosterPath?.let { path ->
             Glide.with(holder.itemView.context)
@@ -82,11 +69,39 @@ class ReviewsAdapter(
                 )
                 .into(holder.moviePoster)
         }
+
         holder.itemView.setOnClickListener {
             onItemClick(review)
         }
     }
 
+    private fun fetchUsername(userId: String, holder: ReviewViewHolder) {
+        firestore.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                val username = document.getString("username") ?: "Unknown User"
+
+                // Cache the username for future use
+                usernameCache[userId] = username
+
+                // Update the TextView if this holder is still showing the same user
+                val currentPosition = holder.adapterPosition
+                if (currentPosition != RecyclerView.NO_POSITION &&
+                    currentPosition < reviews.size &&
+                    reviews[currentPosition].userId == userId) {
+                    holder.username.text = username
+                }
+            }
+            .addOnFailureListener {
+                // Only set "Unknown User" if this is still the correct item
+                val currentPosition = holder.adapterPosition
+                if (currentPosition != RecyclerView.NO_POSITION &&
+                    currentPosition < reviews.size &&
+                    reviews[currentPosition].userId == userId) {
+                    holder.username.text = "Unknown User"
+                }
+                usernameCache[userId] = "Unknown User"
+            }
+    }
 
     override fun onViewRecycled(holder: ReviewViewHolder) {
         super.onViewRecycled(holder)

@@ -16,6 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 class ReviewActivity : AppCompatActivity() {
     private lateinit var moviePoster: ImageView
@@ -38,6 +39,8 @@ class ReviewActivity : AppCompatActivity() {
         submitButton = findViewById(R.id.submitButton)
         ratingSpinner = findViewById(R.id.ratingSpinner)
         cancelButton = findViewById(R.id.cancelButton)
+
+        checkExistingReview()
 
         currentMovie = intent.getParcelableExtra<Movie>("MOVIE") ?: run {
             Toast.makeText(this, "Movie data not found", Toast.LENGTH_SHORT).show()
@@ -129,6 +132,41 @@ class ReviewActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun checkExistingReview() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val userReviews = reviewRepository.getUserReviews()
+                val existingReview = userReviews.firstOrNull { it.movieId == currentMovie.id }
+
+                withContext(Dispatchers.Main) {
+                    if (existingReview != null) {
+                        showAlreadyReviewedDialog(existingReview)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ReviewActivity,
+                        "Error checking reviews: ${e.localizedMessage}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun showAlreadyReviewedDialog(existingReview: Review) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Already Reviewed")
+            .setMessage("You've already reviewed this movie on ${Date(existingReview.timestamp)}")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
     }
     override fun onDestroy() {
         super.onDestroy()

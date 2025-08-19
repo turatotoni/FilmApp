@@ -57,7 +57,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupAdapters() { //2 adaptera jedan koji stavlja filove, drugi usere
         searchAdapter = MovieAdapter(emptyList()) { movie ->
-            val intent = Intent(this, ReviewActivity::class.java).apply { //ako se klikne ide se na recenziranje filma
+            val intent = Intent(this, MovieDetailsActivity::class.java).apply { //ako se klikne ide se na recenziranje filma
                 putExtra("MOVIE", movie)
             }
             startActivity(intent)

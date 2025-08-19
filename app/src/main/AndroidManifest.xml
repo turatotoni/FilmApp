@@ -34,6 +34,7 @@
         <activity android:name=".ReviewsListActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".DisplayReviewActivity"/>
+        <activity android:name=".MovieDetailsActivity" />
 
         <service
             android:name=".MyFirebaseMessagingService"
