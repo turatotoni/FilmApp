@@ -1,6 +1,7 @@
 // DisplayReviewActivity.kt
 package com.example.filmapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -30,8 +31,10 @@ class DisplayReviewActivity : AppCompatActivity() {
     private lateinit var likeCount: TextView
     private lateinit var dislikeCount: TextView
     private lateinit var reviewRepository: ReviewRepository
+    private lateinit var usernameText: TextView
 
     private lateinit var review: Review
+    private lateinit var user: User
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
@@ -48,6 +51,7 @@ class DisplayReviewActivity : AppCompatActivity() {
         dislikeButton = findViewById(R.id.dislikeButton)
         likeCount = findViewById(R.id.likeCount)
         dislikeCount = findViewById(R.id.dislikeCount)
+        usernameText = findViewById(R.id.usernameText)
 
         reviewRepository = ReviewRepository()
 
@@ -57,6 +61,7 @@ class DisplayReviewActivity : AppCompatActivity() {
             return
         }
 
+        user = intent.getParcelableExtra("user") ?: User()
 
         setupViews()
         setupLikeDislikeButtons()
@@ -76,6 +81,12 @@ class DisplayReviewActivity : AppCompatActivity() {
         ratingText.text = "⭐ ${review.rating.toInt()}/10"
         reviewText.text = review.reviewText
 
+        if (user.username.isNotEmpty()) {
+            usernameText.text = user.username
+        } else {
+            fetchUser()
+        }
+
         review.moviePosterPath?.let { path ->
             Glide.with(this)
                 .load("https://image.tmdb.org/t/p/w500$path")
@@ -88,6 +99,24 @@ class DisplayReviewActivity : AppCompatActivity() {
 
         updateLikeDislikeCounts()
     }
+
+    private fun fetchUser() {
+        firestore.collection("users").document(review.userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    user = document.toObject(User::class.java) ?: User()
+                    usernameText.text = user.username
+                } else {
+                    usernameText.text = "Unknown User"
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DisplayReviewActivity", "Error fetching user", e)
+                usernameText.text = "Unknown User"
+            }
+    }
+
+
 
     private fun setupLikeDislikeButtons() {
         val currentUserId = auth.currentUser?.uid ?: return
