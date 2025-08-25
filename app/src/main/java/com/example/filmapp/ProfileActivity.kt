@@ -9,6 +9,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -27,7 +29,59 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var emailText: TextView
     private lateinit var logoutButton: Button
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var badgesRecyclerView: RecyclerView
 
+    // Define your badges
+    private val availableBadges = listOf(
+        Badge(
+            id = "follower_5",
+            title = "Popular 5",
+            imageResId = R.drawable.badge_popular1,
+            condition = { userData ->
+                (userData["followerCount"] as? Long ?: 0) >= 5
+            }
+        ),
+        Badge(
+            id = "follower_10",
+            title = "Popular 10",
+            imageResId = R.drawable.badge_popular2,
+            condition = { userData ->
+                (userData["followerCount"] as? Long ?: 0) >= 10
+            }
+        ),
+        Badge(
+            id = "follower_25",
+            title = "Popular 25",
+            imageResId = R.drawable.badge_popular3,
+            condition = { userData ->
+                (userData["followerCount"] as? Long ?: 0) >= 25
+            }
+        ),
+        Badge(
+            id = "following_5",
+            title = "Follower 5",
+            imageResId = R.drawable.badge_follower1,
+            condition = { userData ->
+                (userData["followingCount"] as? Long ?: 0) >= 5
+            }
+        ),
+        Badge(
+            id = "following_10",
+            title = "Follower 10",
+            imageResId = R.drawable.badge_follower2,
+            condition = { userData ->
+                (userData["followingCount"] as? Long ?: 0) >= 10
+            }
+        ),
+        Badge(
+            id = "following_25",
+            title = "Follower 25",
+            imageResId = R.drawable.badge_follower3,
+            condition = { userData ->
+                (userData["followingCount"] as? Long ?: 0) >= 25
+            }
+        ),
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +97,10 @@ class ProfileActivity : AppCompatActivity() {
         usernameText = findViewById(R.id.profile_username)
         emailText = findViewById(R.id.profile_email)
         logoutButton = findViewById(R.id.logout_button)
+        badgesRecyclerView = findViewById(R.id.badges_recycler_view)
 
+        // Setup badges recycler view
+        badgesRecyclerView.layoutManager = GridLayoutManager(this, 3)
 
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.selectedItemId = R.id.navigation_profile
@@ -76,16 +133,14 @@ class ProfileActivity : AppCompatActivity() {
 
         changePhotoText.setOnClickListener {
             openAvatarPicker()
-            //Toast.makeText(this, "Change photo clicked", Toast.LENGTH_SHORT).show()
         }
         logoutButton.setOnClickListener {
             auth.signOut()
-            //trebalo bi samo napraviti da kad se log autas odma ides na log aut a ne da prelazi mainactivity i slicno
             val intent = Intent(this, LogoutActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
             startActivity(intent)
-            overridePendingTransition(0, 0) // Bez animacija
+            overridePendingTransition(0, 0)
             finish()
         }
     }
@@ -139,11 +194,11 @@ class ProfileActivity : AppCompatActivity() {
                         val followerCount = document.getLong("followerCount") ?: 0
                         val followingCount = document.getLong("followingCount") ?: 0
                         val avatarID = document.getLong("avatarID")?.toInt() ?: R.drawable.ic_profile_placeholder
+                        val reviewCount = document.getLong("reviewCount") ?: 0
 
                         usernameText.text = username
                         followingCountText.text = followingCount.toString()
                         followersCountText.text = followerCount.toString()
-
 
                         Glide.with(this)
                             .load(avatarID)
@@ -151,18 +206,31 @@ class ProfileActivity : AppCompatActivity() {
                             .placeholder(R.drawable.ic_profile_placeholder)
                             .error(R.drawable.ic_profile_placeholder)
                             .into(profileImage)
+
+                        // Load user badges
+                        loadUserBadges(document.data ?: emptyMap())
                     } else {
                         usernameText.text = user.displayName ?: "User"
+                        loadUserBadges(emptyMap())
                     }
                 }
                 .addOnFailureListener {
                     usernameText.text = user.displayName ?: "User"
-                    Toast.makeText(this, "CRASHHH", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to load user data", Toast.LENGTH_SHORT).show()
+                    loadUserBadges(emptyMap())
                 }
         }
     }
 
-    override fun onResume() { //svaki put kad se vratim na ovaj activity opet osvjezi podatke od korisnika
+    private fun loadUserBadges(userData: Map<String, Any>) {
+        val earnedBadges = availableBadges.filter { badge ->
+            badge.condition(userData)
+        }
+
+        badgesRecyclerView.adapter = BadgeAdapter(earnedBadges)
+    }
+
+    override fun onResume() {
         super.onResume()
         bottomNavigationView.selectedItemId = R.id.navigation_profile
         loadUserData()
