@@ -24,7 +24,7 @@
         android:textStyle="bold"
         tools:text="Movie Title" />
 
-    <!-- New LinearLayout to contain username and rating side by side -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
