@@ -81,6 +81,46 @@ class ProfileActivity : AppCompatActivity() {
                 (userData["followingCount"] as? Long ?: 0) >= 25
             }
         ),
+        Badge(
+            id = "review_1",
+            title = "First Review",
+            imageResId = R.drawable.first_review,
+            condition = { userData ->
+                (userData["reviewCount"] as? Long ?: 0) >= 1
+            }
+        ),
+        Badge(
+            id = "review_3",
+            title = "Review 3",
+            imageResId = R.drawable.badge_review1,
+            condition = { userData ->
+                (userData["reviewCount"] as? Long ?: 0) >= 3
+            }
+        ),
+        Badge(
+            id = "review_5",
+            title = "Review 5",
+            imageResId = R.drawable.badge_review2,
+            condition = { userData ->
+                (userData["reviewCount"] as? Long ?: 0) >= 5
+            }
+        ),
+        Badge(
+            id = "popular_review",
+            title = "Popular Review",
+            imageResId = R.drawable.badge_review_popular,
+            condition = { userData ->
+                (userData["has5Likes"] as? Boolean ?: false) == true
+            }
+        ),
+        Badge(
+            id = "review_expert",
+            title = "Review Expert",
+            imageResId = R.drawable.badge_review_expert,
+            condition = { userData ->
+                (userData["has10Likes"] as? Boolean ?: false) == true
+            }
+        )
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -195,6 +235,8 @@ class ProfileActivity : AppCompatActivity() {
                         val followingCount = document.getLong("followingCount") ?: 0
                         val avatarID = document.getLong("avatarID")?.toInt() ?: R.drawable.ic_profile_placeholder
                         val reviewCount = document.getLong("reviewCount") ?: 0
+                        val has5Likes = document.getBoolean("has5Likes") ?: false
+                        val has10Likes = document.getBoolean("has10Likes") ?: false
 
                         usernameText.text = username
                         followingCountText.text = followingCount.toString()

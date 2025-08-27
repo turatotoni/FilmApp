@@ -165,6 +165,7 @@ class DisplayReviewActivity : AppCompatActivity() {
 
                 if (!wasLiked) {
                     sendLikeNotification(userId, review.userId, review.movieTitle)
+                    checkLikeBadges(review.userId, currentLikes.size)
                 }
             } catch (e: Exception) {
                 Log.e("DisplayReviewActivity", "Error toggling like", e)
@@ -270,6 +271,25 @@ class DisplayReviewActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.e("Notifications", "Error getting disliker info", e)
             }
+    }
+
+    private suspend fun checkLikeBadges(userId: String, likeCount: Int) {
+        try {
+            val userRef = firestore.collection("users").document(userId)
+            val updates = mutableMapOf<String, Any>()
+
+            // Check if the review has enough likes for each badge
+            if (likeCount >= 5) updates["has5Likes"] = true
+            if (likeCount >= 10) updates["has10Likes"] = true
+
+            // Update the user document if any badges are earned
+            if (updates.isNotEmpty()) {
+                userRef.update(updates).await()
+                Log.d("LikeBadges", "Updated like badges for user $userId with $likeCount likes")
+            }
+        } catch (e: Exception) {
+            Log.e("LikeBadges", "Failed to update like badges: ${e.message}")
+        }
     }
 
     private suspend fun getReviewDocumentId(): String {

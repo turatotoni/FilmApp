@@ -66,6 +66,9 @@ class RegisterActivity : AppCompatActivity() {
                                             "avatarID" to R.drawable.ic_profile_placeholder,
                                             "followerCount" to 0,
                                             "followingCount" to 0,
+                                            "reviewCount" to 0,
+                                            "has5Likes" to false,
+                                            "has10Likes" to false,
                                             "fcmToken" to ""
                                         )
 

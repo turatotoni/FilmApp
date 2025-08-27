@@ -10,5 +10,8 @@ data class User(
     val email: String = "",
     val avatarID: Int = 0, //prebacio sam string u int jer sam tako prvo napravio s avatarpicker i avataradapter; bio je veliki problem jer nisam mogo ucitat sliku jer sam loado kao string a ne kao id
     val followerCount: Long = 0,
-    val followingCount: Long = 0
+    val followingCount: Long = 0,
+    val reviewCount: Long = 0,
+    val has5Likes: Boolean = false,
+    val has10Likes: Boolean = false
 ) : Parcelable

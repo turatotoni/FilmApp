@@ -13,8 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Date
 
@@ -28,6 +32,8 @@ class ReviewActivity : AppCompatActivity() {
 
     private val reviewRepository = ReviewRepository()
     private lateinit var currentMovie: Movie
+    private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +91,7 @@ class ReviewActivity : AppCompatActivity() {
         }
 
         val review = Review( //napravi review objekt
+            userId = auth.currentUser?.uid ?: "",
             movieId = currentMovie.id,
             movieTitle = currentMovie.title,
             moviePosterPath = currentMovie.poster_path,
@@ -102,11 +109,16 @@ class ReviewActivity : AppCompatActivity() {
         progressDialog.show()
         submitButton.isEnabled = false
 
-
-
         lifecycleScope.launch(Dispatchers.IO) { //korutina se pokrece u pozadinskom threadu
             try {
                 reviewRepository.addReview(review)
+
+
+                val userId = auth.currentUser?.uid
+                if (userId != null) {
+                    updateUserReviewCount(userId)
+                }
+
                 withContext(Dispatchers.Main) { //ako sve uspije na vrca se na main thread
                     if (!isFinishing) {
                         if (progressDialog.isShowing) {
@@ -133,6 +145,29 @@ class ReviewActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    private suspend fun updateUserReviewCount(userId: String) {
+        try {
+            val userRef = firestore.collection("users").document(userId)
+
+            // Try to increment the review count
+            userRef.update("reviewCount", FieldValue.increment(1)).await()
+        } catch (e: Exception) {
+            // If the field doesn't exist yet, set it to 1
+            try {
+                val userDoc = firestore.collection("users").document(userId).get().await()
+                if (!userDoc.exists() || !userDoc.contains("reviewCount")) {
+                    firestore.collection("users").document(userId)
+                        .set(mapOf("reviewCount" to 1), com.google.firebase.firestore.SetOptions.merge())
+                        .await()
+                }
+            } catch (e2: Exception) {
+                Log.e("ReviewActivity", "Failed to initialize reviewCount: ${e2.message}")
+            }
+        }
+    }
+
 
     private fun checkExistingReview() {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -168,6 +203,7 @@ class ReviewActivity : AppCompatActivity() {
             .setCancelable(false)
             .show()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         if (!isDestroyed) {  //ovo sad dodo jer baca illegalArgument (zatvara nes sta se vec zatvorilo)
