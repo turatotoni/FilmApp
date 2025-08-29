@@ -18,7 +18,8 @@
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@drawable/bottom_nav_colors"
         app:itemTextColor="@drawable/bottom_nav_colors"
-        app:itemBackground="@null"/>
+        app:itemBackground="@android:color/transparent"
+        app:itemRippleColor="@android:color/transparent"/>
 
     <ScrollView
         android:layout_width="match_parent"

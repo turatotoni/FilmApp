@@ -14,7 +14,17 @@
         <item name="android:navigationBarColor">@color/dark_surface</item>
         <item name="colorSurface">@color/dark_surface</item>
         <item name="colorOnSurface">@color/dark_on_surface</item>
+        <item name="bottomNavigationStyle">@style/MyBottomNavigationStyle</item>
     </style>
 
+    <style name="MyBottomNavigationStyle" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemActiveIndicatorStyle">@style/NoIndicator</item>
+    </style>
+
+    <style name="NoIndicator" parent="">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+        <item name="android:drawable">@android:color/transparent</item>
+    </style>
     <style name="Theme.FilmApp" parent="Base.Theme.FilmApp" />
 </resources>
