@@ -5,34 +5,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
     app:cardBackgroundColor="@color/dark_surface"
-    app:cardCornerRadius="8dp"
-    app:strokeColor="@color/yellow_primary"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeColor="#30FFD700"
     app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
+        <!-- Avatar -->
         <ImageView
             android:id="@+id/user_avatar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:contentDescription="@string/user_avatar"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_profile_placeholder"
-            android:layout_marginEnd="12dp"
-            app:shapeAppearanceOverlay="@style/CircleShapeAppearance"/>
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/circle_background"/>
 
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
+        <!-- User Info -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/text_primary"
-            tools:text="Username"/>
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                tools:text="Username"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

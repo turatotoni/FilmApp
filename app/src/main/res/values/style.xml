@@ -22,4 +22,10 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:background">@color/dark_surface</item>
     </style>
+    <style name="WhiteSearchView" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorHint">@color/light_gray</item>
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:editTextColor">@color/light_gray</item>
+        <item name="searchHintIcon">@null</item>
+    </style>
 </resources>

@@ -28,10 +28,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@color/bottom_nav_gray"
+            android:elevation="8dp"
             app:menu="@menu/bottom_nav_menu"
             app:labelVisibilityMode="labeled"
-            android:background="@color/dark_surface"
             app:itemIconTint="@drawable/bottom_nav_colors"
-            app:itemTextColor="@drawable/bottom_nav_colors"/>
+            app:itemTextColor="@drawable/bottom_nav_colors"
+            app:itemBackground="@null"/>
     </RelativeLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

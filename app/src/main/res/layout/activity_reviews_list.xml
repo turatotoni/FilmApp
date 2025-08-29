@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/dark_background">
+    android:background="@drawable/gradient_background">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Reviews"
+        android:textSize="24sp"
+        android:textColor="@color/yellow_primary"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="@color/dark_surface"
+        android:elevation="2dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reviewsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/titleTextView"
         android:layout_above="@+id/bottom_navigation"
-        android:padding="8dp"
-        android:background="@color/dark_surface"
+        android:padding="16dp"
+        android:clipToPadding="false"
+        android:background="@android:color/transparent"
         tools:listItem="@layout/item_review"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,9 +36,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@color/bottom_nav_gray"
+        android:elevation="8dp"
         app:menu="@menu/bottom_nav_menu"
-        android:background="@color/dark_surface"
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@drawable/bottom_nav_colors"
-        app:itemTextColor="@drawable/bottom_nav_colors"/>
+        app:itemTextColor="@drawable/bottom_nav_colors"
+        app:itemBackground="@null"/>
 </RelativeLayout>

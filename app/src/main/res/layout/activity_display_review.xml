@@ -5,73 +5,85 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="24dp"
+    android:background="@drawable/gradient_background">
 
     <ImageView
         android:id="@+id/moviePoster"
         android:layout_width="200dp"
         android:layout_height="300dp"
         android:layout_gravity="center_horizontal"
-        android:scaleType="fitCenter" />
+        android:scaleType="centerCrop"
+        android:background="@color/dark_gray"
+        android:elevation="4dp"
+        app:cornerRadius="12dp"/>
 
     <TextView
         android:id="@+id/movieTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:textSize="22sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
         tools:text="Movie Title" />
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <!-- Username TextView that will be clickable -->
         <TextView
             android:id="@+id/usernameText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="16sp"
-            android:textColor="@color/yellow_500"
+            android:textColor="@color/yellow_primary"
             android:textStyle="bold"
             android:clickable="true"
             android:focusable="true"
-            android:padding="4dp"
+            android:padding="8dp"
             tools:text="ReviewerUsername" />
 
         <TextView
             android:id="@+id/ratingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/yellow_primary"
+            android:background="@drawable/rating_background"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
             tools:text="⭐ 8/10" />
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical"
-        android:background="@drawable/review_background"
-        android:padding="16dp">
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="@color/dark_surface"
+        app:cardCornerRadius="16dp"
+        app:strokeColor="#30FFD700"
+        app:strokeWidth="1dp"
+        app:cardElevation="2dp">
 
         <TextView
             android:id="@+id/reviewText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
-            android:textColor="@android:color/black"
-            tools:text="This is a long review text that will now be properly displayed with scrolling capability. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc eu nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc eu nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc eu nisl." />
-    </LinearLayout>
+            android:textSize="15sp"
+            android:lineSpacingExtra="4sp"
+            android:textColor="@color/light_gray"
+            android:padding="20dp"
+            tools:text="This is a long review text that will now be properly displayed with scrolling capability. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc eu nisl." />
+    </com.google.android.material.card.MaterialCardView>
 
+    <!-- Like/Dislike Buttons - Cleaner design but same functionality -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,11 +93,12 @@
 
         <ImageButton
             android:id="@+id/likeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:src="@drawable/ic_thumb_up"
-            android:drawablePadding="8dp"
-            android:backgroundTint="@color/yellow_500"
+            android:background="@drawable/button_reaction"
+            android:scaleType="centerInside"
+            android:padding="16dp"
             app:tint="@drawable/button_like_selector"/>
 
         <TextView
@@ -93,16 +106,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="24dp"
+            android:textSize="16sp"
+            android:textColor="@color/white"
             tools:text="0" />
 
         <ImageButton
             android:id="@+id/dislikeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:src="@drawable/ic_thumb_down"
-            android:drawablePadding="8dp"
-            android:backgroundTint="@color/yellow_500"
+            android:background="@drawable/button_reaction"
+            android:scaleType="centerInside"
+            android:padding="16dp"
             app:tint="@drawable/button_dislike_selector"/>
 
         <TextView
@@ -110,6 +126,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:textSize="16sp"
+            android:textColor="@color/white"
             tools:text="0" />
     </LinearLayout>
 </LinearLayout>
