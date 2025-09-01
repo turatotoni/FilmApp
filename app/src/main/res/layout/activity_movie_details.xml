@@ -104,6 +104,20 @@
                 android:lineSpacingExtra="4sp"
                 android:layout_marginBottom="24dp"/>
 
+            <!-- Watch Trailer Button -->
+            <Button
+                android:id="@+id/watchTrailerButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="24dp"
+                android:text="🎬 Watch Trailer"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/button_secondary"
+                android:textColor="@color/white"
+                android:drawablePadding="8dp"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+
             <!-- Reviews Section -->
             <TextView
                 android:layout_width="match_parent"

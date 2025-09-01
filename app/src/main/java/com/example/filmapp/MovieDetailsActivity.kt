@@ -1,6 +1,7 @@
 package com.example.filmapp
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -26,6 +27,7 @@ class MovieDetailsActivity : AppCompatActivity() {
     private lateinit var movieOverview: TextView
     private lateinit var reviewsRecyclerView: RecyclerView
     private lateinit var createReviewButton: Button
+    private lateinit var watchTrailerButton: Button
 
     private lateinit var reviewsAdapter: ReviewsAdapter
     private lateinit var db: FirebaseFirestore
@@ -44,6 +46,7 @@ class MovieDetailsActivity : AppCompatActivity() {
         movieOverview = findViewById(R.id.movieOverview)
         reviewsRecyclerView = findViewById(R.id.reviewsRecyclerView)
         createReviewButton = findViewById(R.id.createReviewButton)
+        watchTrailerButton = findViewById(R.id.watchTrailerButton)
 
         // Initialize Firestore
         db = Firebase.firestore
@@ -70,6 +73,11 @@ class MovieDetailsActivity : AppCompatActivity() {
                 putExtra("MOVIE", currentMovie)
             }
             startActivity(intent)
+        }
+
+
+        watchTrailerButton.setOnClickListener {
+            openYouTubeTrailer(currentMovie.title)
         }
     }
 
@@ -100,6 +108,35 @@ class MovieDetailsActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MovieDetailsActivity)
             adapter = reviewsAdapter
             setHasFixedSize(true)
+        }
+    }
+
+
+    private fun openYouTubeTrailer(movieTitle: String) {
+        try {
+            // Create search query for the movie trailer
+            val searchQuery = "${movieTitle} official trailer"
+            val encodedQuery = Uri.encode(searchQuery)
+
+            // First try to open YouTube app
+            val youtubeIntent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("https://www.youtube.com/results?search_query=$encodedQuery")
+                setPackage("com.google.android.youtube")
+            }
+
+            // If YouTube app is installed, open it
+            if (youtubeIntent.resolveActivity(packageManager) != null) {
+                startActivity(youtubeIntent)
+            } else {
+                // Fallback to browser
+                val browserIntent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse("https://www.youtube.com/results?search_query=$encodedQuery")
+                }
+                startActivity(browserIntent)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error opening trailer", Toast.LENGTH_SHORT).show()
+            Log.e("MovieDetails", "Error opening trailer", e)
         }
     }
 
