@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -28,14 +29,19 @@ class MovieDetailsActivity : AppCompatActivity() {
     private lateinit var reviewsRecyclerView: RecyclerView
     private lateinit var createReviewButton: Button
     private lateinit var watchTrailerButton: Button
-
+    private lateinit var top3Button: ImageButton
     private lateinit var reviewsAdapter: ReviewsAdapter
     private lateinit var db: FirebaseFirestore
     private lateinit var currentMovie: Movie
+    private lateinit var top3Manager: Top3Manager
+    private var isInTop3 = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie_details)
+
+        // Initialize Top3Manager
+        top3Manager = Top3Manager(this)
 
         // Initialize views
         moviePoster = findViewById(R.id.moviePoster)
@@ -47,6 +53,7 @@ class MovieDetailsActivity : AppCompatActivity() {
         reviewsRecyclerView = findViewById(R.id.reviewsRecyclerView)
         createReviewButton = findViewById(R.id.createReviewButton)
         watchTrailerButton = findViewById(R.id.watchTrailerButton)
+        top3Button = findViewById(R.id.top3Button) // Initialize Top 3 button
 
         // Initialize Firestore
         db = Firebase.firestore
@@ -57,6 +64,10 @@ class MovieDetailsActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        // Check if movie is in Top 3
+        isInTop3 = top3Manager.isInTop3(currentMovie.id)
+        updateTop3ButtonAppearance()
 
         // Set up UI with movie data
         setupMovieDetails(currentMovie)
@@ -75,10 +86,49 @@ class MovieDetailsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        // Set up watch trailer button
         watchTrailerButton.setOnClickListener {
             openYouTubeTrailer(currentMovie.title)
         }
+
+        // Set up Top 3 button - ADD THIS
+        top3Button.setOnClickListener {
+            toggleTop3()
+        }
+    }
+
+    private fun toggleTop3() {
+        if (isInTop3) {
+            // Remove from Top 3
+            top3Manager.removeFromTop3(currentMovie.id)
+            isInTop3 = false
+            updateTop3ButtonAppearance()
+            Toast.makeText(this, "Removed from Top 3", Toast.LENGTH_SHORT).show()
+        } else {
+            // Try to add to Top 3
+            val success = top3Manager.addToTop3(currentMovie)
+            if (success) {
+                isInTop3 = true
+                updateTop3ButtonAppearance()
+                Toast.makeText(this, "Added to Top 3!", Toast.LENGTH_SHORT).show()
+            } else {
+                val currentCount = top3Manager.getTop3Count()
+                Toast.makeText(
+                    this,
+                    "You can only have 3 movies in your Top 3. Remove one to add this movie.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun updateTop3ButtonAppearance() {
+        val drawableRes = if (isInTop3) {
+            R.drawable.ic_star_filled
+        } else {
+            R.drawable.ic_star_outline
+        }
+        top3Button.setImageResource(drawableRes)
     }
 
     private fun setupMovieDetails(movie: Movie) {
@@ -90,6 +140,7 @@ class MovieDetailsActivity : AppCompatActivity() {
         movieTitle.text = movie.title
         val year = movie.release_date?.take(4) ?: ""
         movieReleaseDate.text = if (year.isNotEmpty()) "($year)" else ""
+
         movieOverview.text = movie.overview
         tmdbRating.text = "⭐ ${"%.1f".format(movie.vote_average)}/10 (IMDb Rating)"
         appAverageRating.text = "⭐ Loading..." // Will be updated when reviews are loaded
@@ -97,7 +148,6 @@ class MovieDetailsActivity : AppCompatActivity() {
 
     private fun setupReviewsRecyclerView() {
         reviewsAdapter = ReviewsAdapter(emptyList()) { review ->
-            // Handle review item click if needed
             val intent = Intent(this, DisplayReviewActivity::class.java).apply {
                 putExtra("review", review)
             }
@@ -111,24 +161,19 @@ class MovieDetailsActivity : AppCompatActivity() {
         }
     }
 
-
     private fun openYouTubeTrailer(movieTitle: String) {
         try {
-            // Create search query for the movie trailer
             val searchQuery = "${movieTitle} official trailer"
             val encodedQuery = Uri.encode(searchQuery)
 
-            // First try to open YouTube app
             val youtubeIntent = Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse("https://www.youtube.com/results?search_query=$encodedQuery")
                 setPackage("com.google.android.youtube")
             }
 
-            // If YouTube app is installed, open it
             if (youtubeIntent.resolveActivity(packageManager) != null) {
                 startActivity(youtubeIntent)
             } else {
-                // Fallback to browser
                 val browserIntent = Intent(Intent.ACTION_VIEW).apply {
                     data = Uri.parse("https://www.youtube.com/results?search_query=$encodedQuery")
                 }

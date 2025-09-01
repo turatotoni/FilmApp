@@ -3,6 +3,7 @@ package com.example.filmapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -30,6 +32,9 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var logoutButton: Button
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var badgesRecyclerView: RecyclerView
+    private lateinit var top3RecyclerView: RecyclerView
+    private lateinit var top3Manager: Top3Manager
+    private lateinit var top3Adapter: Top3MovieAdapter
 
     // Define your badges
     private val availableBadges = listOf(
@@ -129,6 +134,7 @@ class ProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        top3Manager = Top3Manager(this)
 
         profileImage = findViewById(R.id.profile_image)
         changePhotoText = findViewById(R.id.change_photo_text)
@@ -138,9 +144,21 @@ class ProfileActivity : AppCompatActivity() {
         emailText = findViewById(R.id.profile_email)
         logoutButton = findViewById(R.id.logout_button)
         badgesRecyclerView = findViewById(R.id.badges_recycler_view)
+        top3RecyclerView = findViewById(R.id.top3_recycler_view)
 
         // Setup badges recycler view
         badgesRecyclerView.layoutManager = GridLayoutManager(this, 3)
+
+        top3RecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        top3Adapter = Top3MovieAdapter(emptyList()) { movie ->
+            // Handle movie click - open movie details
+            val intent = Intent(this, MovieDetailsActivity::class.java).apply {
+                putExtra("MOVIE", movie)
+            }
+            startActivity(intent)
+        }
+        top3RecyclerView.adapter = top3Adapter
 
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.selectedItemId = R.id.navigation_profile
@@ -170,6 +188,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         loadUserData()
+        loadTop3Movies()
 
         changePhotoText.setOnClickListener {
             openAvatarPicker()
@@ -264,6 +283,19 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadTop3Movies() {
+        val top3Movies = top3Manager.getTop3()
+        top3Adapter.updateMovies(top3Movies)
+
+        // Show/hide the section based on whether there are any Top 3 movies
+        if (top3Movies.isEmpty()) {
+            top3RecyclerView.visibility = View.GONE
+            // You might want to hide the "My Top 3 Movies" title too
+            findViewById<TextView>(R.id.top3_text_view)?.visibility = View.GONE // Adjust ID if needed
+        } else {
+            top3RecyclerView.visibility = View.VISIBLE
+        }
+    }
     private fun loadUserBadges(userData: Map<String, Any>) {
         val earnedBadges = availableBadges.filter { badge ->
             badge.condition(userData)
@@ -276,5 +308,6 @@ class ProfileActivity : AppCompatActivity() {
         super.onResume()
         bottomNavigationView.selectedItemId = R.id.navigation_profile
         loadUserData()
+        loadTop3Movies()
     }
 }

@@ -62,6 +62,14 @@
                         android:textSize="16sp"
                         android:textColor="@color/light_gray"/>
 
+                    <TextView
+                        android:id="@+id/movieRuntime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/light_gray"/>
+
                     <!-- TMDB Rating -->
                     <TextView
                         android:id="@+id/tmdbRating"
@@ -85,15 +93,34 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Overview Section -->
-            <TextView
+            <!-- Overview Section with Top 3 Button in same row -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Overview"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:layout_marginBottom="12dp"/>
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Overview"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
+
+                <!-- Top 3 Button -->
+                <ImageButton
+                    android:id="@+id/top3Button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:contentDescription="Add to Top 3"
+                    app:srcCompat="@drawable/ic_star_outline" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/movieOverview"

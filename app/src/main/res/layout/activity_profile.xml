@@ -146,6 +146,27 @@
                 android:textColor="@color/light_gray"
                 android:gravity="center"/>
 
+            <!-- Top 3 Section -->
+            <TextView
+                android:id="@+id/top3_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Top 3"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_marginTop="32dp"
+                android:gravity="center"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/top3_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                android:background="@android:color/transparent"/>
+
             <!-- Badges Section -->
             <TextView
                 android:layout_width="match_parent"

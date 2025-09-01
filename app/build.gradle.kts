@@ -91,5 +91,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     //notis
     implementation("com.google.firebase:firebase-messaging:23.0.0")
+    implementation("com.google.code.gson:gson:2.13.1")
+
 
 }
