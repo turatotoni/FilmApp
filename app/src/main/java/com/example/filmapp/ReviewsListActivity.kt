@@ -3,6 +3,9 @@ package com.example.filmapp
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,14 +18,22 @@ import kotlinx.coroutines.launch
 class ReviewsListActivity : AppCompatActivity() {
     private lateinit var adapter: ReviewsAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var filterButton: ImageButton
     private val reviewRepository = ReviewRepository()
     private var loadingJob: Job? = null
+    private var allReviews: List<Review> = emptyList()
+    private var currentFilter: FilterOption = FilterOption.NONE
+
+    enum class FilterOption {
+        NONE, RATING_HIGH, RATING_LOW, MOST_LIKES, MOST_DISLIKES
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reviews_list)
 
         val recyclerView = findViewById<RecyclerView>(R.id.reviewsRecyclerView)
+        filterButton = findViewById(R.id.filterButton)
 
         recyclerView.layoutManager = LinearLayoutManager(this@ReviewsListActivity)
 
@@ -36,6 +47,7 @@ class ReviewsListActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
 
+        setupFilterButton()
         loadReviews()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -65,11 +77,74 @@ class ReviewsListActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFilterButton() {
+        filterButton.setOnClickListener {
+            showFilterMenu()
+        }
+    }
+
+    private fun showFilterMenu() {
+        val popup = PopupMenu(this, filterButton)
+        popup.menuInflater.inflate(R.menu.reviews_filter_menu, popup.menu)
+
+        // Mark current filter option
+        when (currentFilter) {
+            FilterOption.RATING_HIGH -> popup.menu.findItem(R.id.filter_rating_high).isChecked = true
+            FilterOption.RATING_LOW -> popup.menu.findItem(R.id.filter_rating_low).isChecked = true
+            FilterOption.MOST_LIKES -> popup.menu.findItem(R.id.filter_most_likes).isChecked = true
+            FilterOption.MOST_DISLIKES -> popup.menu.findItem(R.id.filter_most_dislikes).isChecked = true
+            FilterOption.NONE -> popup.menu.findItem(R.id.filter_none).isChecked = true
+        }
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.filter_none -> {
+                    currentFilter = FilterOption.NONE
+                    applyFilter()
+                    true
+                }
+                R.id.filter_rating_high -> {
+                    currentFilter = FilterOption.RATING_HIGH
+                    applyFilter()
+                    true
+                }
+                R.id.filter_rating_low -> {
+                    currentFilter = FilterOption.RATING_LOW
+                    applyFilter()
+                    true
+                }
+                R.id.filter_most_likes -> {
+                    currentFilter = FilterOption.MOST_LIKES
+                    applyFilter()
+                    true
+                }
+                R.id.filter_most_dislikes -> {
+                    currentFilter = FilterOption.MOST_DISLIKES
+                    applyFilter()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
+    private fun applyFilter() {
+        val filteredReviews = when (currentFilter) {
+            FilterOption.NONE -> allReviews
+            FilterOption.RATING_HIGH -> allReviews.sortedByDescending { it.rating }
+            FilterOption.RATING_LOW -> allReviews.sortedBy { it.rating }
+            FilterOption.MOST_LIKES -> allReviews.sortedByDescending { it.likes.size }
+            FilterOption.MOST_DISLIKES -> allReviews.sortedByDescending { it.dislikes.size }
+        }
+        adapter.updateReviews(filteredReviews)
+    }
+
     private fun loadReviews() {
         loadingJob = lifecycleScope.launch {
             try {
-                val reviews = reviewRepository.getUserReviews()
-                adapter.updateReviews(reviews)
+                allReviews = reviewRepository.getUserReviews()
+                applyFilter()
             } catch (e: Exception) {
                 handleError(e)
             }
@@ -86,9 +161,11 @@ class ReviewsListActivity : AppCompatActivity() {
             ).show()
         }
     }
+
     override fun onResume() {
         super.onResume()
-        // Osigurajte da je Home označen kad se vratite na ovaj Activity
+        // Refresh reviews when returning to this activity
+        loadReviews()
         bottomNavigationView.selectedItemId = R.id.navigation_reviews
     }
 }

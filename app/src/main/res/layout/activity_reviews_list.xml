@@ -6,25 +6,42 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <!-- Title -->
-    <TextView
-        android:id="@+id/titleTextView"
+    <LinearLayout
+        android:id="@+id/titleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Your Reviews"
-        android:textSize="24sp"
-        android:textColor="@color/yellow_primary"
-        android:textStyle="bold"
-        android:gravity="center"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:padding="16dp"
         android:background="@color/dark_surface"
-        android:elevation="2dp"/>
+        android:elevation="2dp">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Your Reviews"
+            android:textSize="24sp"
+            android:textColor="@color/yellow_primary"
+            android:textStyle="bold"
+            android:gravity="start"/>
+
+        <ImageButton
+            android:id="@+id/filterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_filter"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/filter_reviews"
+            app:tint="@color/yellow_primary"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reviewsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/titleTextView"
+        android:layout_below="@id/titleContainer"
         android:layout_above="@+id/bottom_navigation"
         android:padding="16dp"
         android:clipToPadding="false"

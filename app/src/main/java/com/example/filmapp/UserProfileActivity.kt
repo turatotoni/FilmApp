@@ -24,9 +24,13 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var reviewsAdapter: ReviewsAdapter
+    private lateinit var top3Adapter: Top3MovieAdapter
     private lateinit var reviewsRecyclerView: RecyclerView
+    private lateinit var top3RecyclerView: RecyclerView
     private lateinit var reviewsSectionTitle: TextView
+    private lateinit var top3SectionTitle: TextView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var top3Manager: Top3Manager
     private var userId: String? = null
     private var currentUserId: String? = null
 
@@ -36,30 +40,41 @@ class UserProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        top3Manager = Top3Manager(this)
 
-        // Initialize SwipeRefreshLayout
+        // Initialize views
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
-        swipeRefreshLayout.setOnRefreshListener {
-            refreshData()
-        }
-
         reviewsRecyclerView = findViewById(R.id.reviews_recycler_view)
+        top3RecyclerView = findViewById(R.id.top3_recycler_view)
         reviewsSectionTitle = findViewById(R.id.reviews_section_title)
-        reviewsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                swipeRefreshLayout.isEnabled = (recyclerView.computeVerticalScrollOffset() == 0)
-            }
-        })
-        // Setup RecyclerView
+        top3SectionTitle = findViewById(R.id.top3_section_title)
+
+        // Setup RecyclerViews
         reviewsRecyclerView.layoutManager = LinearLayoutManager(this)
+        top3RecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        // Setup Adapters
         reviewsAdapter = ReviewsAdapter(emptyList()) { review ->
             val intent = Intent(this, DisplayReviewActivity::class.java).apply {
                 putExtra("review", review)
             }
             startActivity(intent)
         }
+
+        top3Adapter = Top3MovieAdapter(emptyList()) { movie ->
+            val intent = Intent(this, MovieDetailsActivity::class.java).apply {
+                putExtra("MOVIE", movie)
+            }
+            startActivity(intent)
+        }
+
         reviewsRecyclerView.adapter = reviewsAdapter
+        top3RecyclerView.adapter = top3Adapter
+
+        // Setup swipe refresh
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
 
         userId = intent.getStringExtra("USER_ID")
         currentUserId = auth.currentUser?.uid
@@ -71,6 +86,9 @@ class UserProfileActivity : AppCompatActivity() {
 
             if (userId == currentUserId) {
                 followButton.visibility = View.GONE
+                // If viewing own profile, show everything
+                loadUserReviews(userId!!)
+                loadTop3Movies(userId!!)
             } else {
                 checkFollowingStatus(currentUserId, userId!!, followButton)
 
@@ -108,7 +126,7 @@ class UserProfileActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.followers_count).text = followerCount.toString()
                     findViewById<TextView>(R.id.following_count).text = followingCount.toString()
 
-                    // Load avatar (using Glide or similar library)
+                    // Load avatar
                     Glide.with(this)
                         .load(avatarID)
                         .placeholder(R.drawable.ic_profile_placeholder)
@@ -123,8 +141,31 @@ class UserProfileActivity : AppCompatActivity() {
             }
     }
 
+    private fun loadTop3Movies(userId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val top3Movies = top3Manager.getTop3ForUser(userId)
 
-    private fun checkFollowingStatus(currentUserId: String?, targetUserId: String, button: Button) { //provjeravamo da li vec pratimo ovog user-a
+                withContext(Dispatchers.Main) {
+                    if (top3Movies.isNotEmpty()) {
+                        top3Adapter.updateMovies(top3Movies)
+                        top3SectionTitle.visibility = View.VISIBLE
+                        top3RecyclerView.visibility = View.VISIBLE
+                    } else {
+                        top3SectionTitle.visibility = View.GONE
+                        top3RecyclerView.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    top3SectionTitle.visibility = View.GONE
+                    top3RecyclerView.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun checkFollowingStatus(currentUserId: String?, targetUserId: String, button: Button) {
         if (currentUserId == null) return
 
         firestore.collection("followers")
@@ -138,8 +179,10 @@ class UserProfileActivity : AppCompatActivity() {
 
                 if (isFollowing) {
                     loadUserReviews(targetUserId)
+                    loadTop3Movies(targetUserId) // Load Top 3 when following
                 } else {
                     hideReviews()
+                    hideTop3() // Hide Top 3 when not following
                 }
             }
     }
@@ -153,13 +196,14 @@ class UserProfileActivity : AppCompatActivity() {
             .document(currentUserId)
 
         followersRef.get().addOnSuccessListener { document ->
-            if (document.exists()) { //ako ga vec imamo u dokumentu znaci da ga pratimo
+            if (document.exists()) {
                 // Unfollow
                 followersRef.delete()
                 button.text = "Follow"
                 updateFollowerCount(targetUserId, -1)
                 updateFollowingCount(currentUserId, -1)
                 hideReviews()
+                hideTop3() // Hide Top 3 when unfollowing
             } else {
                 // Follow
                 followersRef.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
@@ -167,22 +211,22 @@ class UserProfileActivity : AppCompatActivity() {
                 updateFollowerCount(targetUserId, 1)
                 updateFollowingCount(currentUserId, 1)
                 loadUserReviews(targetUserId)
+                loadTop3Movies(targetUserId) // Load Top 3 when following
                 sendFollowNotification(currentUserId, targetUserId)
             }
         }
-
     }
 
-    private fun loadUserReviews(userId: String) { //prikaz reviewa na profilu
-        CoroutineScope(Dispatchers.IO).launch { //rad u pozadini
+    private fun loadUserReviews(userId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val reviews = firestore.collection("reviews") //trazenje u firestore svih reviewa s ovim userIDem
+                val reviews = firestore.collection("reviews")
                     .whereEqualTo("userId", userId)
                     .get()
                     .await()
-                    .toObjects(Review::class.java)//pretvorba u objekt
+                    .toObjects(Review::class.java)
 
-                withContext(Dispatchers.Main) { //kada su reviewi spremni za prikazat vraca se u main thread
+                withContext(Dispatchers.Main) {
                     if (reviews.isNotEmpty()) {
                         reviewsAdapter.updateReviews(reviews)
                         reviewsSectionTitle.visibility = View.VISIBLE
@@ -204,13 +248,21 @@ class UserProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun hideReviews() {
+        reviewsSectionTitle.visibility = View.GONE
+        reviewsRecyclerView.visibility = View.GONE
+    }
+
+    private fun hideTop3() {
+        top3SectionTitle.visibility = View.GONE
+        top3RecyclerView.visibility = View.GONE
+    }
+
     private fun sendFollowNotification(followerId: String, targetUserId: String) {
-        // Get follower's username first
         firestore.collection("users").document(followerId).get()
             .addOnSuccessListener { document ->
                 val followerName = document.getString("username") ?: "Someone"
 
-                // Create notification document in Firestore
                 val notificationData = hashMapOf(
                     "type" to "follow",
                     "senderId" to followerId,
@@ -218,8 +270,7 @@ class UserProfileActivity : AppCompatActivity() {
                     "username" to followerName,
                     "timestamp" to FieldValue.serverTimestamp(),
                     "read" to false,
-                    "sent" to false,
-                    //"sendOnLogin" to true // Mark for sending on login
+                    "sent" to false
                 )
 
                 firestore.collection("notifications")
@@ -231,11 +282,6 @@ class UserProfileActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.e("Notifications", "Error getting follower info", e)
             }
-    }
-
-    private fun hideReviews() {
-        reviewsSectionTitle.visibility = View.GONE
-        reviewsRecyclerView.visibility = View.GONE
     }
 
     private fun updateFollowerCount(userId: String, change: Int) {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/filter_none"
+            android:title="No filter"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/filter_rating_high"
+            android:title="Highest rating"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/filter_rating_low"
+            android:title="Lowest rating"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/filter_most_likes"
+            android:title="Most likes"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/filter_most_dislikes"
+            android:title="Most dislikes"
+            android:checkable="true"/>
+    </group>
+</menu>

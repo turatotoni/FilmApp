@@ -17,6 +17,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MovieDetailsActivity : AppCompatActivity() {
 
@@ -98,26 +102,32 @@ class MovieDetailsActivity : AppCompatActivity() {
     }
 
     private fun toggleTop3() {
-        if (isInTop3) {
-            // Remove from Top 3
-            top3Manager.removeFromTop3(currentMovie.id)
-            isInTop3 = false
-            updateTop3ButtonAppearance()
-            Toast.makeText(this, "Removed from Top 3", Toast.LENGTH_SHORT).show()
-        } else {
-            // Try to add to Top 3
-            val success = top3Manager.addToTop3(currentMovie)
-            if (success) {
-                isInTop3 = true
-                updateTop3ButtonAppearance()
-                Toast.makeText(this, "Added to Top 3!", Toast.LENGTH_SHORT).show()
+        CoroutineScope(Dispatchers.IO).launch {
+            if (isInTop3) {
+                // Remove from Top 3
+                top3Manager.removeFromTop3(currentMovie.id)
+                withContext(Dispatchers.Main) {
+                    isInTop3 = false
+                    updateTop3ButtonAppearance()
+                    Toast.makeText(this@MovieDetailsActivity, "Removed from Top 3", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                val currentCount = top3Manager.getTop3Count()
-                Toast.makeText(
-                    this,
-                    "You can only have 3 movies in your Top 3. Remove one to add this movie.",
-                    Toast.LENGTH_LONG
-                ).show()
+                // Try to add to Top 3
+                val success = top3Manager.addToTop3(currentMovie)
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        isInTop3 = true
+                        updateTop3ButtonAppearance()
+                        Toast.makeText(this@MovieDetailsActivity, "Added to Top 3!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val currentCount = top3Manager.getTop3Count()
+                        Toast.makeText(
+                            this@MovieDetailsActivity,
+                            "You can only have 3 movies in your Top 3. Remove one to add this movie.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
         }
     }

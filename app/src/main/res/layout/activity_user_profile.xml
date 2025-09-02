@@ -139,6 +139,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/top3_section_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Top 3 Movies"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/top3_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"/>
+
         </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

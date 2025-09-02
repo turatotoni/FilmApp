@@ -18,6 +18,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firestore.v1.StructuredAggregationQuery.Aggregation.Count
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -284,24 +288,45 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadTop3Movies() {
-        val top3Movies = top3Manager.getTop3()
-        top3Adapter.updateMovies(top3Movies)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val top3Movies = top3Manager.getTop3()
 
-        // Show/hide the section based on whether there are any Top 3 movies
-        if (top3Movies.isEmpty()) {
-            top3RecyclerView.visibility = View.GONE
-            // You might want to hide the "My Top 3 Movies" title too
-            findViewById<TextView>(R.id.top3_text_view)?.visibility = View.GONE // Adjust ID if needed
-        } else {
-            top3RecyclerView.visibility = View.VISIBLE
+                withContext(Dispatchers.Main) {
+                    val top3TextView = findViewById<TextView>(R.id.top3_text_view)
+                    if (top3Movies.isNotEmpty()) {
+                        top3Adapter.updateMovies(top3Movies)
+                        top3RecyclerView.visibility = View.VISIBLE
+                        top3TextView.visibility = View.VISIBLE
+                    } else {
+                        top3RecyclerView.visibility = View.GONE
+                        top3TextView.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    val top3TextView = findViewById<TextView>(R.id.top3_text_view)
+                    top3RecyclerView.visibility = View.GONE
+                    top3TextView.visibility = View.GONE
+                }
+            }
         }
     }
+
     private fun loadUserBadges(userData: Map<String, Any>) {
         val earnedBadges = availableBadges.filter { badge ->
             badge.condition(userData)
         }
 
-        badgesRecyclerView.adapter = BadgeAdapter(earnedBadges)
+        val badgesTextView = findViewById<TextView>(R.id.badges_text_view)
+        if (earnedBadges.isNotEmpty()) {
+            badgesRecyclerView.adapter = BadgeAdapter(earnedBadges)
+            badgesRecyclerView.visibility = View.VISIBLE
+            badgesTextView.visibility = View.VISIBLE
+        } else {
+            badgesRecyclerView.visibility = View.GONE
+            badgesTextView.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
