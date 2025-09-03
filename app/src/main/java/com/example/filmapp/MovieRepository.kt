@@ -16,6 +16,26 @@ class MovieRepository {
         }
     }
 
+    suspend fun getTopRatedMovies(page: Int): List<Movie> {
+        return try {
+            val response = tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY, page = page)
+            response.results
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+
+    suspend fun getUpcomingMovies(page: Int): List<Movie> {
+        return try {
+            val response = tmdbService.getUpcomingMovies(BuildConfig.TMDB_API_KEY, page = page)
+            response.results
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+
     suspend fun searchMovies(query: String): List<Movie> {
         return try {
             val response = tmdbService.searchMovies(

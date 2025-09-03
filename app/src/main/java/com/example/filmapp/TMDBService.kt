@@ -14,6 +14,23 @@ interface TMDBService {
         @Query("page") page: Int//broj stranice
     ): MovieResponse //sve u ovaj objekt
 
+
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int
+    ): MovieResponse
+
+
+    @GET("movie/upcoming")
+    suspend fun getUpcomingMovies(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int
+    ): MovieResponse
+
+
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"
 
