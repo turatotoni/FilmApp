@@ -70,11 +70,15 @@
                 android:paddingVertical="16dp">
 
                 <LinearLayout
+                    android:id="@+id/followers_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginEnd="32dp">
+                    android:layout_marginEnd="32dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <TextView
                         android:id="@+id/followers_count"
@@ -101,11 +105,15 @@
                     android:layout_marginHorizontal="8dp"/>
 
                 <LinearLayout
+                    android:id="@+id/following_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginStart="32dp">
+                    android:layout_marginStart="32dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <TextView
                         android:id="@+id/following_count"

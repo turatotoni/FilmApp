@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,6 +40,9 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var top3RecyclerView: RecyclerView
     private lateinit var top3Manager: Top3Manager
     private lateinit var top3Adapter: Top3MovieAdapter
+    private lateinit var followersLayout: LinearLayout
+    private lateinit var followingLayout: LinearLayout
+
 
     // Define your badges
     private val availableBadges = listOf(
@@ -149,6 +153,8 @@ class ProfileActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.logout_button)
         badgesRecyclerView = findViewById(R.id.badges_recycler_view)
         top3RecyclerView = findViewById(R.id.top3_recycler_view)
+        followersLayout = findViewById(R.id.followers_layout)
+        followingLayout = findViewById(R.id.following_layout)
 
         // Setup badges recycler view
         badgesRecyclerView.layoutManager = GridLayoutManager(this, 3)
@@ -191,6 +197,20 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
+        followersLayout.setOnClickListener {
+            val intent = Intent(this, FollowListActivity::class.java).apply {
+                putExtra("IS_FOLLOWERS", true)
+            }
+            startActivity(intent)
+        }
+
+        followingLayout.setOnClickListener {
+            val intent = Intent(this, FollowListActivity::class.java).apply {
+                putExtra("IS_FOLLOWERS", false)
+            }
+            startActivity(intent)
+        }
+
         loadUserData()
         loadTop3Movies()
 
@@ -207,6 +227,8 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
     }
+
+
 
     private val pickAvatarLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
