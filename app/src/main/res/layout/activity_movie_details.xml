@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@drawable/gradient_background"
     tools:context=".MovieDetailsActivity">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/createReviewButton"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
@@ -137,7 +138,7 @@
                 android:drawablePadding="8dp"
                 style="@style/Widget.AppCompat.Button.Borderless"/>
 
-            <!-- Reviews Section -->
+            <!-- Reviews Section Header -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,31 +148,29 @@
                 android:textColor="@color/white"
                 android:layout_marginBottom="16dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/reviewsRecyclerView"
+            <!-- Reviews Container - We'll add reviews here programmatically -->
+            <LinearLayout
+                android:id="@+id/reviewsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:nestedScrollingEnabled="false"
-                android:background="@android:color/transparent"/>
+                android:orientation="vertical"/>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Create Review Button -->
     <Button
         android:id="@+id/createReviewButton"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
         android:text="Create Review"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/button_primary"
         android:textColor="@color/black"
         android:elevation="8dp"
         style="@style/Widget.AppCompat.Button.Borderless"/>
 
-</RelativeLayout>
+</LinearLayout>

@@ -63,7 +63,7 @@ class FollowListActivity : AppCompatActivity() {
 
         Log.d(TAG, "loadFollowers: Querying followers/$currentUserId/userFollowers")
 
-        // Load from: followers/{currentUserId}/userFollowers/{followerId}
+
         firestore.collection("followers")
             .document(currentUserId)
             .collection("userFollowers")
@@ -77,7 +77,7 @@ class FollowListActivity : AppCompatActivity() {
                     Log.d(TAG, "loadFollowers: No followers found")
                     showEmptyState("You are not followed by anyone")
                 } else {
-                    // Document IDs are the follower user IDs
+
                     val followerIds = documents.documents.map { it.id }
                     Log.d(TAG, "loadFollowers: Follower IDs extracted: $followerIds")
 
@@ -107,7 +107,7 @@ class FollowListActivity : AppCompatActivity() {
 
         Log.d(TAG, "loadFollowing: Finding all users that current user follows")
 
-        // Get all users first
+
         firestore.collection("users")
             .get()
             .addOnSuccessListener { allUsers ->
@@ -127,13 +127,11 @@ class FollowListActivity : AppCompatActivity() {
                 for (userDoc in allUsers.documents) {
                     val targetUserId = userDoc.id
 
-                    // Skip checking if current user follows themselves
+
                     if (targetUserId != currentUserId) {
                         Log.d(TAG, "loadFollowing: Checking if follows $targetUserId")
 
-                        // Check if current user follows this target user
-                        // Using the same structure as UserProfileActivity:
-                        // followers/{targetUserId}/userFollowers/{currentUserId}
+
                         firestore.collection("followers")
                             .document(targetUserId)
                             .collection("userFollowers")
@@ -201,7 +199,7 @@ class FollowListActivity : AppCompatActivity() {
             return
         }
 
-        // Firestore has a limit of 10 items for "whereIn" queries
+
         val batches = userIds.chunked(10)
         Log.d(TAG, "loadUsersData: Split into ${batches.size} batches")
 
@@ -211,7 +209,7 @@ class FollowListActivity : AppCompatActivity() {
         for ((index, batch) in batches.withIndex()) {
             Log.d(TAG, "loadUsersData: Processing batch $index with ${batch.size} IDs: $batch")
 
-            // Use FieldPath.documentId() to query by document ID
+
             firestore.collection("users")
                 .whereIn(FieldPath.documentId(), batch)
                 .get()
@@ -238,7 +236,7 @@ class FollowListActivity : AppCompatActivity() {
                     Log.d(TAG, "loadUsersData: Batch $index completed. Total users so far: ${allUsers.size}")
                     Log.d(TAG, "loadUsersData: Completed batches: $completedBatches/${batches.size}")
 
-                    // If we've processed all batches, display the results
+
                     if (completedBatches == batches.size) {
                         Log.d(TAG, "loadUsersData: All batches completed. Total users found: ${allUsers.size}")
 

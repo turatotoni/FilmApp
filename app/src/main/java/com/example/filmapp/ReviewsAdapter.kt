@@ -45,13 +45,14 @@ class ReviewsAdapter(
         holder.reviewText.text = review.reviewText
         holder.ratingText.text = "⭐ ${review.rating.toInt()}/10"
 
+        // Always make username visible first to ensure proper layout measurement
+        holder.username.visibility = View.VISIBLE
+
         // Handle username display
         if (review.userId == currentUserId) {
-            // Hide username for current user's reviews
-            holder.username.visibility = View.GONE
+            // For current user's reviews, show "Your Review" instead of hiding
+            holder.username.text = "Your Review"
         } else {
-            // Show username for other users' reviews
-            holder.username.visibility = View.VISIBLE
             if (usernameCache.containsKey(review.userId)) {
                 holder.username.text = usernameCache[review.userId]
             } else {

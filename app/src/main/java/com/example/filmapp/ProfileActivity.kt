@@ -44,7 +44,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var followingLayout: LinearLayout
 
 
-    // Define your badges
+
     private val availableBadges = listOf(
         Badge(
             id = "follower_5",
@@ -156,13 +156,13 @@ class ProfileActivity : AppCompatActivity() {
         followersLayout = findViewById(R.id.followers_layout)
         followingLayout = findViewById(R.id.following_layout)
 
-        // Setup badges recycler view
+
         badgesRecyclerView.layoutManager = GridLayoutManager(this, 3)
 
         top3RecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         top3Adapter = Top3MovieAdapter(emptyList()) { movie ->
-            // Handle movie click - open movie details
+
             val intent = Intent(this, MovieDetailsActivity::class.java).apply {
                 putExtra("MOVIE", movie)
             }
