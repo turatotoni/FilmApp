@@ -226,9 +226,9 @@ class MovieDetailsActivity : AppCompatActivity() {
                         // First get all unique user IDs
                         val userIds = reviews.map { it.userId }.distinct()
 
-                        // Fetch all usernames first
+
                         fetchAllUsernames(userIds) { usernameMap ->
-                            // Now add all reviews with proper usernames
+
                             reviews.forEach { review ->
                                 addReviewToContainer(review, usernameMap)
                             }

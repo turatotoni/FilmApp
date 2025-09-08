@@ -17,7 +17,7 @@ class HorizontalMovieAdapter(
         //val title: TextView = view.findViewById(R.id.movieTitle)
         val poster: ImageView = view.findViewById(R.id.moviePoster)
         //val rating: TextView = view.findViewById(R.id.movieRating)
-        // No need for releaseDate and overview in horizontal layout
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HorizontalMovieViewHolder {
@@ -30,9 +30,9 @@ class HorizontalMovieAdapter(
         val movie = movies[position]
         //holder.title.text = movie.title
         //holder.rating.text = "⭐ ${"%.1f".format(movie.vote_average)}"
-        // No release date or overview in horizontal layout
 
-        // Load image using Glide
+
+
         Glide.with(holder.itemView.context)
             .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
             .into(holder.poster)

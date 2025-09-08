@@ -107,7 +107,7 @@ class HomeActivity : AppCompatActivity() {
         // Observe popular movies
         viewModel.popularMovies.observe(this) { movies ->
             popularAdapter.updateMovies(movies)
-            // Optionally set the first popular movie as featured
+
             if (movies.isNotEmpty()) {
                 setFeaturedMovie(movies.first())
             }
